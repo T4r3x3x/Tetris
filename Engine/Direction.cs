@@ -1,4 +1,4 @@
-﻿namespace Tetris
+﻿namespace TetrisEngine
 {
 	public class Direction
 	{

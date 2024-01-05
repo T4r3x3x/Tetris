@@ -1,4 +1,4 @@
-﻿namespace Tetris.Display
+﻿namespace TetrisEngine.Display
 {
 	public class ConsoleDisplay : IDisplay
 	{

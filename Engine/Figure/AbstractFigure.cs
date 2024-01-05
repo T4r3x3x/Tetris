@@ -1,4 +1,4 @@
-﻿namespace Tetris.Figuries
+﻿namespace TetrisEngine.Figure
 {
 	public abstract class AbstractFigure
 	{
