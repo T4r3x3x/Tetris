@@ -7,8 +7,9 @@ const int Delay = 1000;
 
 
 var display = new ConsoleDisplay();
-var inputReader = new ConsoleInputController();
 GameProducer gameProducer = new(Delay);
+var inputHandler = new DefaultInputHandler(gameProducer);
+var inputReader = new ConsoleInputController(inputHandler);
 ConsoleKeyInfo key;
 Task controller, game;
 

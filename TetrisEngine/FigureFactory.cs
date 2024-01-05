@@ -6,24 +6,23 @@ namespace TetrisEngine
 	{
 		public AbstractFigure GetFigure(Figuries figure)
 		{
-			switch (figure)
+			return figure switch
 			{
-				case Figuries.I:
-					break;
+			Figuries.I => new AbstractFigure(),
 				case Figuries.J:
-					break;
-				case Figuries.L:
-					break;
-				case Figuries.O:
-					break;
-				case Figuries.S:
-					break;
-				case Figuries.T:
-					break;
-				case Figuries.Z:
-					break;
-				default:
-					throw new Exception();
+				break;
+			case Figuries.L:
+				break;
+			case Figuries.O:
+				break;
+			case Figuries.S:
+				break;
+			case Figuries.T:
+				break;
+			case Figuries.Z:
+				break;
+			default:
+				throw new Exception();
 			}
 		}
 	}
