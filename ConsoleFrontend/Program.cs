@@ -1,17 +1,19 @@
-﻿using TetrisEngine;
-using TetrisEngine.Display;
-using TetrisEngine.Input;
+﻿using ConsoleFrontend.Display;
+using ConsoleFrontend.Input;
 
-const int Width = 3, Height = 3, Delay = 1000;
+using TetrisEngine;
 
-Cell[,] field = new Cell[Width, Height];
-IDisplay display = new ConsoleDisplay();
-IInputReader inputReader = new ConsoleInputReader();
-GameProducer gameProducer = new(Delay, inputReader);
+const int Delay = 1000;
+
+
+var display = new ConsoleDisplay();
+var inputReader = new ConsoleInputController();
+GameProducer gameProducer = new(Delay);
 ConsoleKeyInfo key;
 Task controller, game;
+
 if ((key = Console.ReadKey()).Key == ConsoleKey.Spacebar)
 {
-	game = Task.Run(gameProducer.StartGame);
+	game = Task.Run(gameProducer.Start);
 	controller = Task.Run(inputReader.Reading);
 }

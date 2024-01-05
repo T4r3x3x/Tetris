@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Engine\TetrisEngine.csproj" />
+    <ProjectReference Include="..\TetrisEngine\TetrisEngine.csproj" />
   </ItemGroup>
+
 
 </Project>

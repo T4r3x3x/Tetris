@@ -1,6 +1,8 @@
-﻿namespace TetrisEngine.Display
+﻿using TetrisEngine;
+
+namespace ConsoleFrontend.Display
 {
-	public class ConsoleDisplay : IDisplay
+	public class ConsoleDisplay
 	{
 		public void Display(Cell[,] field) => throw new NotImplementedException();
 	}

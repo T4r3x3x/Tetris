@@ -4,12 +4,12 @@ namespace TetrisEngine
 {
 	public class Cell
 	{
-		public char? Symbol;
+		public bool Filled;
 		public Color Color;
 
-		public Cell(char symbol, Color color)
+		public Cell(bool filled, Color color)
 		{
-			Symbol = symbol;
+			Filled = filled;
 			Color = color;
 		}
 	}

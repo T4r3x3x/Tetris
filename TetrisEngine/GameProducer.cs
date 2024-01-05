@@ -1,26 +1,29 @@
 ﻿using TetrisEngine.Figure;
-using TetrisEngine.Input;
 
 namespace TetrisEngine
 {
 	public class GameProducer
 	{
+		const int Width = 3, Height = 3;
 		private const int figuriesCount = 7;
 		private bool isGameOver = false;
 		private bool isPause = false;
 		private readonly int Delay;
-		private readonly IInputReader _inputReader;
 		private Random _random;
 		private AbstractFigure _figure;
+		private FigureFactory _figureFactory;
+		Cell[,] field = new Cell[Width, Height];
 
-		public GameProducer(int delay, IInputReader inputReader)
+		public GameProducer(int delay)
 		{
 			Delay = delay;
-			_inputReader = inputReader;
-			_inputReader.OnNewInput += InputHandler;
+			_figureFactory = new FigureFactory();
 		}
 
-		public void StartGame()
+
+		#region API
+
+		public void Start()
 		{
 			ProduceGame();
 		}
@@ -30,31 +33,39 @@ namespace TetrisEngine
 		{
 
 		}
-
-		private void InputHandler(ConsoleKey key)
+		public void Resume()
 		{
-			switch (key)
-			{
-				case ConsoleKey.A:
-					break;
-				case ConsoleKey.D:
-					break;
-				case ConsoleKey.W:
-					break;
-				case ConsoleKey.S:
-					break;
-				case ConsoleKey.Escape:
-					break;
-			}
+
 		}
+
+		public void MoveFigureLeft()
+		{
+
+		}
+		public void MoveFigureRight()
+		{
+
+		}
+		public void MoveFigureDown()
+		{
+
+		}
+
+		public void RotateFigure()
+		{
+
+		}
+		#endregion
+
 
 		private AbstractFigure GetFigure()
 		{
 			var figureNumber = _random.Next(figuriesCount);
+
 			return;
 		}
 
-		public void ProduceGame()
+		private void ProduceGame()
 		{
 			while (!isGameOver)
 			{
