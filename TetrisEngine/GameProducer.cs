@@ -97,8 +97,14 @@ namespace TetrisEngine
 			if (_figure.BottomPos == Height - 1)
 				return;
 
-			for (int i = 0; i < _figure.segments.Length; i++)
+			for (int i = _figure.segments.Length - 1; i > -1; i--) //в таком порядке, чтобы сначала обрабатывались нижние сегменты, а потом верхнии
+			{
+				var oldPos = _figure.segments[i];
 				_figure.segments[i].Y++;
+				var newPos = _figure.segments[i];
+				gameField[newPos.Y][newPos.X].Filled = true;
+				gameField[oldPos.Y][oldPos.X].Filled = false;
+			}
 
 			_figure.BottomPos++;
 			OnGameFieldChanged(gameField);
@@ -122,7 +128,7 @@ namespace TetrisEngine
 					while (CanMoveDown())
 					{
 						Thread.Sleep(Delay);
-						//	MoveFigureDown();
+						MoveFigureDown();
 					}
 
 
