@@ -1,12 +1,19 @@
-﻿using TetrisEngine;
+﻿using ConsoleFrontend.Display;
+
+using TetrisEngine;
 
 namespace ConsoleFrontend.Input
 {
 	public class DefaultInputHandler : IInputHandler
 	{
 		private readonly GameProducer _game;
+		private readonly ConsoleDisplay _display;
 
-		public DefaultInputHandler(GameProducer game) => _game = game;
+		public DefaultInputHandler(GameProducer game, ConsoleDisplay display)
+		{
+			_game = game;
+			_display = display;
+		}
 
 		public void InputHandle(ConsoleKey key)
 		{
@@ -31,6 +38,7 @@ namespace ConsoleFrontend.Input
 					_game.Resume();
 					break;
 			}
+			_display.Update();
 		}
 	}
 }

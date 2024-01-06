@@ -6,8 +6,11 @@ namespace ConsoleFrontend.Display
 {
 	public class ConsoleDisplay
 	{
+		private IReadOnlyCollection<IReadOnlyCollection<Cell>> _gameFieldLastDraw;
+
 		public void Display(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameField)
 		{
+			_gameFieldLastDraw = gameField;
 			Console.Clear();
 			var width = gameField.First().Count;
 			DisplayVerticalLine(width);
@@ -15,6 +18,11 @@ namespace ConsoleFrontend.Display
 				DisplayRow((Cell[])row);
 
 			DisplayVerticalLine(width);
+		}
+
+		public void Update()
+		{
+			Display(_gameFieldLastDraw);
 		}
 
 		private void DisplayVerticalLine(int width)
