@@ -61,22 +61,34 @@ namespace TetrisEngine
 
 			for (int i = 0; i < _figure.segments.Length; i++)
 			{
+				var oldPos = _figure.segments[i];
 				_figure.segments[i].X--;
-				_figure.LeftPos--;
+				var newPos = _figure.segments[i];
+				gameField[newPos.Y][newPos.X].Filled = true;
+				gameField[oldPos.Y][oldPos.X].Filled = false;
 			}
+
+			_figure.LeftPos--;
+			_figure.RightPos--;
 			OnGameFieldChanged(gameField);
 		}
 
 		public void MoveFigureRight()
 		{
-			if (_figure.RightPos == gameField.Length - 1)
+			if (_figure.RightPos == Width - 1)
 				return;
 
-			for (int i = 0; i < _figure.segments.Length; i++)
+			for (int i = _figure.segments.Length - 1; i > -1; i--) //в таком порядке, чтобы сначала обрабатывался правый сегмент, а потом левый
 			{
+				var oldPos = _figure.segments[i];
 				_figure.segments[i].X++;
-				_figure.LeftPos++;
+				var newPos = _figure.segments[i];
+				gameField[newPos.Y][newPos.X].Filled = true;
+				gameField[oldPos.Y][oldPos.X].Filled = false;
 			}
+
+			_figure.LeftPos++;
+			_figure.RightPos++;
 			OnGameFieldChanged(gameField);
 		}
 
@@ -86,10 +98,9 @@ namespace TetrisEngine
 				return;
 
 			for (int i = 0; i < _figure.segments.Length; i++)
-			{
-				_figure.segments[i].Y--;
-				_figure.BottomPos--;
-			}
+				_figure.segments[i].Y++;
+
+			_figure.BottomPos++;
 			OnGameFieldChanged(gameField);
 		}
 
@@ -111,9 +122,10 @@ namespace TetrisEngine
 					while (CanMoveDown())
 					{
 						Thread.Sleep(Delay);
-						MoveFigureDown();
+						//	MoveFigureDown();
 					}
-					break;
+
+
 				}
 			}
 		}
@@ -121,11 +133,23 @@ namespace TetrisEngine
 		private void CreateNewFigure()
 		{
 			_figure = _figureFactory.GetFigure(_startPosition);
+			AddSegmentsToGameField(_figure.segments);
 			OnGameFieldChanged(gameField);
 		}
 
-		private bool CanMoveDown()
+		private void AddSegmentsToGameField(Position[] segmentsPosition)
 		{
+			foreach (var pos in segmentsPosition)
+			{
+				var i = pos.X;
+				var j = pos.Y;
+				gameField[j][i].Filled = true;
+			}
+		}
+
+		private bool CanMoveDown()//todo баг 
+		{
+			return true;
 			for (int i = 0; i < _figure.segments.Length; i++)
 				if (_figure.segments[i].Y == _figure.BottomPos)
 					if (gameField[_figure.segments[i].X][_figure.segments[i].Y].Filled)
@@ -134,7 +158,19 @@ namespace TetrisEngine
 			return true;
 		}
 
-		private void DeleteRow()
+		private void DeleteFilledRows()
+		{
+			for (int i = 0; i < Height; i++)
+				if (NeedToDelete(gameField[i]))
+					DeleteRow(i);
+		}
+
+		private bool NeedToDelete(Cell[] row)
+		{
+			return false;
+		}
+
+		private void DeleteRow(int rowNumber)//todo переписать чтобы удалялась строка с указанным индексом
 		{
 			for (int i = 0; i < gameField.GetLength(0); i++)
 				gameField[gameField.Length - 1][i].Filled = false;

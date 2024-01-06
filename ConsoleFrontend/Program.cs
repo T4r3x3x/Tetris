@@ -21,3 +21,5 @@ if ((key = Console.ReadKey()).Key == ConsoleKey.Spacebar)
 	controller = Task.Run(inputReader.Reading);
 	game.Wait();
 }
+
+//Console.Read();
