@@ -7,10 +7,34 @@ namespace ConsoleFrontend.Display
 	public class ConsoleDisplay
 	{
 		private IReadOnlyCollection<IReadOnlyCollection<Cell>> _gameFieldLastDraw;
+		private CancellationTokenSource cancelTokenSource;
+		private CancellationToken token;
+		private Task printTask;
+		private bool isPrinting = false;
 
 		public void Display(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameField)
 		{
+			if (isPrinting)
+				//if (token.CanBeCanceled)
+				cancelTokenSource.Cancel();
+
 			_gameFieldLastDraw = gameField;
+			cancelTokenSource = new CancellationTokenSource();
+			token = cancelTokenSource.Token;
+			printTask = new Task(() => Print(gameField), token);
+			printTask.Start();
+			printTask.Wait();
+			isPrinting = false;
+		}
+
+		public void Update()
+		{
+			Display(_gameFieldLastDraw);
+		}
+
+		private void Print(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameField)
+		{
+			isPrinting = true;
 			Console.Clear();
 			var width = gameField.First().Count;
 			DisplayVerticalLine(width);
@@ -18,11 +42,6 @@ namespace ConsoleFrontend.Display
 				DisplayRow((Cell[])row);
 
 			DisplayVerticalLine(width);
-		}
-
-		public void Update()
-		{
-			Display(_gameFieldLastDraw);
 		}
 
 		private void DisplayVerticalLine(int width)

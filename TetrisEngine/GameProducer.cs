@@ -35,6 +35,13 @@ namespace TetrisEngine
 				for (int j = 0; j < gameField[i].Length; j++)
 					gameField[i][j] = new Cell(false, System.Drawing.Color.Black);
 			}
+
+			for (int i = 0; i < Width; i++)
+			{
+				gameField[Height - 1][i].Filled = true;
+				gameField[Height - 2][i].Filled = true;
+				gameField[Height - 3][2].Filled = true;
+			}
 		}
 
 		#region API
@@ -44,11 +51,11 @@ namespace TetrisEngine
 			ProduceGame();
 		}
 
-
 		public void Pause()
 		{
 			isPause = true;
 		}
+
 		public void Resume()
 		{
 			isPause = false;
@@ -94,7 +101,7 @@ namespace TetrisEngine
 
 		public void MoveFigureDown()
 		{
-			if (_figure.BottomPos == Height - 1)
+			if (!CanMoveDown())
 				return;
 
 			for (int i = _figure.segments.Length - 1; i > -1; i--) //в таком порядке, чтобы сначала обрабатывались нижние сегменты, а потом верхнии
@@ -118,7 +125,7 @@ namespace TetrisEngine
 		}
 		#endregion
 
-		private void ProduceGame()
+		private void ProduceGame()//todo Добавить проверку что новую фигуру можно разместить
 		{
 			while (!isGameOver)
 			{
@@ -128,10 +135,9 @@ namespace TetrisEngine
 					while (CanMoveDown())
 					{
 						Thread.Sleep(Delay);
-						MoveFigureDown();
+						//MoveFigureDown();
 					}
-
-
+					DeleteFilledRows();
 				}
 			}
 		}
@@ -155,10 +161,12 @@ namespace TetrisEngine
 
 		private bool CanMoveDown()//todo баг 
 		{
-			return true;
+			if (_figure.BottomPos == Height - 1)
+				return false;
+
 			for (int i = 0; i < _figure.segments.Length; i++)
 				if (_figure.segments[i].Y == _figure.BottomPos)
-					if (gameField[_figure.segments[i].X][_figure.segments[i].Y].Filled)
+					if (gameField[_figure.segments[i].Y + 1][_figure.segments[i].X].Filled)
 						return false;
 
 			return true;
@@ -166,30 +174,39 @@ namespace TetrisEngine
 
 		private void DeleteFilledRows()
 		{
-			for (int i = 0; i < Height; i++)
+			for (int i = Height - 1; i > 0;)
+			{
 				if (NeedToDelete(gameField[i]))
 					DeleteRow(i);
+				else
+					i--;
+			}
 		}
 
 		private bool NeedToDelete(Cell[] row)
 		{
-			return false;
+			for (int i = 0; i < row.Length; i++)
+				if (row[i].Filled == false)
+					return false;
+
+			return true;
 		}
 
-		private void DeleteRow(int rowNumber)//todo переписать чтобы удалялась строка с указанным индексом
+		private void DeleteRow(int rowNumber)
 		{
-			for (int i = 0; i < gameField.GetLength(0); i++)
-				gameField[gameField.Length - 1][i].Filled = false;
+			for (int i = 0; i < Width; i++)
+				gameField[rowNumber][i].Filled = false;
 
-			MoveFilledCellsDown();
+			MoveFilledCellsDown(rowNumber);
 		}
 
-		private void MoveFilledCellsDown()
+		private void MoveFilledCellsDown(int startRow)
 		{
-			for (int i = 0; i < gameField.Length; i++)
-				for (int j = 1; j < gameField.GetLength(0) || gameField[i][j - 1].Filled == false; j++)
+			for (int i = 0; i < Width; i++)
+				for (int j = startRow; j > 0 && gameField[j - 1][i].Filled != false; j--)
 				{
-					gameField[i][j].Filled = false;
+					gameField[j][i].Filled = true;
+					gameField[j - 1][i].Filled = false;
 				}
 		}
 	}

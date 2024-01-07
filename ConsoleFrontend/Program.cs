@@ -3,7 +3,7 @@ using ConsoleFrontend.Input;
 
 using TetrisEngine;
 
-const int Delay = 1000;
+const int Delay = 400;
 
 
 var display = new ConsoleDisplay();
