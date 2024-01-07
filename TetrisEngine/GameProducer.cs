@@ -61,7 +61,7 @@ namespace TetrisEngine
 			isPause = false;
 		}
 
-		public void MoveFigureLeft()
+		public void MoveFigureLeft()//проверка что слева нет ничего 
 		{
 			if (_figure.LeftPos == 0)
 				return;
@@ -80,7 +80,7 @@ namespace TetrisEngine
 			OnGameFieldChanged(gameField);
 		}
 
-		public void MoveFigureRight()
+		public void MoveFigureRight()//проверка что справа нет ничего
 		{
 			if (_figure.RightPos == Width - 1)
 				return;
@@ -135,7 +135,7 @@ namespace TetrisEngine
 					while (CanMoveDown())
 					{
 						Thread.Sleep(Delay);
-						//MoveFigureDown();
+						MoveFigureDown();
 					}
 					DeleteFilledRows();
 				}
@@ -159,7 +159,7 @@ namespace TetrisEngine
 			}
 		}
 
-		private bool CanMoveDown()//todo баг 
+		private bool CanMoveDown()
 		{
 			if (_figure.BottomPos == Height - 1)
 				return false;

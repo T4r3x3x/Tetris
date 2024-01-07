@@ -39,6 +39,7 @@ namespace ConsoleFrontend.Input
 					break;
 			}
 			_display.Update();
+			Thread.Sleep(100);
 		}
 	}
 }

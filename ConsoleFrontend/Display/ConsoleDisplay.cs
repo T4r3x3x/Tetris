@@ -11,20 +11,21 @@ namespace ConsoleFrontend.Display
 		private CancellationToken token;
 		private Task printTask;
 		private bool isPrinting = false;
+		private object _sync = new object();
 
 		public void Display(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameField)
 		{
-			if (isPrinting)
-				//if (token.CanBeCanceled)
-				cancelTokenSource.Cancel();
+			//	if (isPrinting)
+			//		printTask.Wait();
+			//if (token.CanBeCanceled)
+			//	cancelTokenSource.Cancel();
 
 			_gameFieldLastDraw = gameField;
 			cancelTokenSource = new CancellationTokenSource();
 			token = cancelTokenSource.Token;
 			printTask = new Task(() => Print(gameField), token);
 			printTask.Start();
-			printTask.Wait();
-			isPrinting = false;
+
 		}
 
 		public void Update()
@@ -34,14 +35,18 @@ namespace ConsoleFrontend.Display
 
 		private void Print(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameField)
 		{
-			isPrinting = true;
-			Console.Clear();
-			var width = gameField.First().Count;
-			DisplayVerticalLine(width);
-			foreach (var row in gameField)
-				DisplayRow((Cell[])row);
+			lock (_sync)
+			{
+				isPrinting = true;
+				Console.Clear();
+				var width = gameField.First().Count;
+				DisplayVerticalLine(width);
+				foreach (var row in gameField)
+					DisplayRow((Cell[])row);
 
-			DisplayVerticalLine(width);
+				DisplayVerticalLine(width);
+				isPrinting = false;
+			}
 		}
 
 		private void DisplayVerticalLine(int width)
