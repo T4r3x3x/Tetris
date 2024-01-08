@@ -15,10 +15,9 @@ namespace ConsoleFrontend.Display
 
 		public void Display(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameField)
 		{
-			//	if (isPrinting)
-			//		printTask.Wait();
-			//if (token.CanBeCanceled)
-			//	cancelTokenSource.Cancel();
+			if (isPrinting)
+				if (token.CanBeCanceled)
+					cancelTokenSource.Cancel();
 
 			_gameFieldLastDraw = gameField;
 			cancelTokenSource = new CancellationTokenSource();

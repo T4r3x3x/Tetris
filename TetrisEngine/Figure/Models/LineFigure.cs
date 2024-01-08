@@ -1,19 +1,17 @@
 ﻿namespace TetrisEngine.Figure.Models
 {
-	internal class LFigure : AbstractFigure
+	internal class LineFigure : AbstractFigure
 	{
-		public LFigure(Position startPosition)
+		public LineFigure(Position startPosition)
 		{
 			for (int i = 0; i < segments.Length; i++)
+			{
 				segments[i] = startPosition;
+				segments[i].Y += i;
+			}
 
-			segments[1].Y += 1;
-			segments[2].Y += 2;
-			segments[3].Y += 2;
-			segments[3].X += 1;
-
-			LeftPos = segments[0].X;
-			RightPos = segments[3].X;
+			LeftPos = segments[3].X;
+			RightPos = segments[0].X;
 			TopPos = segments[0].Y;
 			BottomPos = segments[3].Y;
 		}
