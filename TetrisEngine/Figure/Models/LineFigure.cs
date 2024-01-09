@@ -10,7 +10,7 @@
 		{
 			for (int i = 0; i < Segments.Length; i++)
 			{
-				Segments[i] = (Position)startPosition.Clone();
+				Segments[i] = startPosition;
 				Segments[i].Y += i;
 			}
 

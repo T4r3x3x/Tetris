@@ -1,6 +1,6 @@
 ﻿namespace TetrisEngine
 {
-	public class Position : ICloneable
+	public struct Position : ICloneable
 	{
 		public int X, Y;
 
@@ -37,7 +37,5 @@
 
 			return false;
 		}
-
-		public object Clone() => new Position(X, Y);
 	}
 }
