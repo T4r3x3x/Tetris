@@ -4,20 +4,20 @@
 	{
 		public LFigure(Position startPosition)
 		{
-			for (int i = 0; i < segments.Length; i++)
-				segments[i] = startPosition;
+			for (int i = 0; i < Segments.Length; i++)
+				Segments[i] = startPosition;
 
-			segments[1].Y += 1;
-			segments[2].Y += 2;
-			segments[3].Y += 2;
-			segments[3].X += 1;
+			Segments[1].Y += 1;
+			Segments[2].Y += 2;
+			Segments[3].Y += 2;
+			Segments[3].X += 1;
 
-			LeftPos = segments[0].X;
-			RightPos = segments[3].X;
-			TopPos = segments[0].Y;
-			BottomPos = segments[3].Y;
+			LeftPos = Segments[0].X;
+			RightPos = Segments[3].X;
+			BottomPos = Segments[3].Y;
 		}
 
-		public override void Rotate() => throw new NotImplementedException();
+		public override void Rotate(RotateDirection direction) => throw new NotImplementedException();
+		protected override Position[] GetSegmentsDisplacement(RotateDirection direction) => throw new NotImplementedException();
 	}
 }

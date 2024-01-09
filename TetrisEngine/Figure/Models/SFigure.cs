@@ -4,21 +4,20 @@
 	{
 		public SFigure(Position startPosition)
 		{
-			for (int i = 0; i < segments.Length; i++)
-				segments[i] = startPosition;
+			for (int i = 0; i < Segments.Length; i++)
+				Segments[i] = startPosition;
 
+			Segments[1].X += 1;
+			Segments[2].Y += 1;
+			Segments[2].X -= 1;
+			Segments[3].Y += 1;
 
-			segments[1].X += 1;
-			segments[2].Y += 1;
-			segments[2].X -= 1;
-			segments[3].Y += 1;
-
-			LeftPos = segments[3].X;
-			RightPos = segments[1].X;
-			TopPos = segments[0].Y;
-			BottomPos = segments[3].Y;
+			LeftPos = Segments[3].X;
+			RightPos = Segments[1].X;
+			BottomPos = Segments[3].Y;
 		}
 
-		public override void Rotate() => throw new NotImplementedException();
+		public override void Rotate(RotateDirection direction) => throw new NotImplementedException();
+		protected override Position[] GetSegmentsDisplacement(RotateDirection direction) => throw new NotImplementedException();
 	}
 }

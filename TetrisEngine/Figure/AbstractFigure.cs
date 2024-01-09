@@ -3,49 +3,22 @@
 	public abstract class AbstractFigure
 	{
 		private const int SegmentsCount = 4;
-		public int LeftPos, TopPos, BottomPos, RightPos;
-		public Position[] segments = new Position[SegmentsCount]; //todo переименовать в segmentsPosition
-
-		public abstract void Rotate();
+		public Position[] Segments = new Position[SegmentsCount]; //todo переименовать в segmentsPosition
 
 		public bool BelongToFigure(Position segment)
 		{
-			foreach (var figureSegment in segments)
+			foreach (var figureSegment in Segments)
 				if (figureSegment == segment)
 					return true;
 
 			return false;
 		}
+		public abstract void Rotate(RotateDirection direction);
+		protected abstract Position[] GetSegmentsDisplacement(RotateDirection direction);
 	}
 
-	public struct Position
+	public enum RotateDirection
 	{
-		public int X, Y;
-
-		public Position(int x, int y)
-		{
-			this.X = x;
-			this.Y = y;
-		}
-
-		public static bool operator ==(Position pos1, Position pos2)
-		{
-			if (pos1.X == pos2.X && pos1.Y == pos2.Y)
-				return true;
-			return false;
-		}
-
-		public static Position operator +(Position pos1, Position pos2)
-		{
-			return new Position(pos1.X + pos2.X, pos1.Y + pos2.Y);
-		}
-
-		public static bool operator !=(Position pos1, Position pos2)
-		{
-			if (pos1.X != pos2.X || pos1.Y != pos2.Y)
-				return true;
-
-			return false;
-		}
+		left = -1, right = 1,
 	}
 }
