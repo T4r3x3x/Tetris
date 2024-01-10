@@ -5,11 +5,14 @@ namespace TetrisEngine
 	public class GameProducer
 	{
 		private const int Width = 10, Height = 20;
+		private const double DelayDecrisingPercent = 0.01;
 
 		private int _countOfErasedRows = 0;
+		private int _delay;
+
 		private readonly Position _startPosition = new(6, 0);
 		private bool isGameOver = false, isPause = false;
-		private readonly int Delay;
+
 		private AbstractFigure _figure;
 		private FigureFactory _figureFactory = new FigureFactory();
 
@@ -18,9 +21,9 @@ namespace TetrisEngine
 		public delegate void GameFieldChangeHandler(IReadOnlyCollection<IReadOnlyCollection<Cell>> cells);
 		public event GameFieldChangeHandler OnGameFieldChanged;
 
-		public GameProducer(int delay)
+		public GameProducer(int startDelay)
 		{
-			Delay = delay;
+			_delay = startDelay;
 			InitializeGameField();
 		}
 
@@ -105,10 +108,11 @@ namespace TetrisEngine
 
 					while (CanMove(_figure, MoveDirection.Down))
 					{
-						Thread.Sleep(Delay);
+						Thread.Sleep(_delay);
 						MoveFigureDown();
 					}
-					EraseFilledRows();
+					var erasedRowsOnThisIter = EraseFilledRows();
+					IncreaseGameSpeed(erasedRowsOnThisIter);
 				}
 			}
 			return _countOfErasedRows;
@@ -223,18 +227,28 @@ namespace TetrisEngine
 			}
 		}
 
-		private void EraseFilledRows()
+		private void IncreaseGameSpeed(int incresingCount)
 		{
+			for (int i = 0; i < incresingCount; i++)
+				_delay = Convert.ToInt32(_delay * (1 - DelayDecrisingPercent));
+		}
+
+		private int EraseFilledRows()
+		{
+			int countOfErasedRows = 0;
+
 			for (int i = Height - 1; i > 0;)
 			{
 				if (NeedToDelete(_gameField[i]))
 				{
 					EraseRow(i);
 					_countOfErasedRows++;
+					countOfErasedRows++;
 				}
 				else
 					i--;
 			}
+			return countOfErasedRows;
 		}
 
 		private bool NeedToDelete(Cell[] row)
