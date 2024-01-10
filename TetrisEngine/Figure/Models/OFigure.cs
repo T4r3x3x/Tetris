@@ -11,14 +11,8 @@
 			Segments[2].Y += 1;
 			Segments[3].Y += 1;
 			Segments[3].X += 1;
-
-			LeftPos = Segments[0].X;
-			RightPos = Segments[1].X;
-			BottomPos = Segments[3].Y;
 		}
-
-		public override void Rotate(RotateDirection direction) {/*квадрат при вращении никак не изменяется */}
-
-		protected override Position[] GetSegmentsDisplacement(RotateDirection direction) => throw new NotImplementedException();
+		//при повороте фигуры ничего не меняется
+		public override Position[] GetRotateDisplacement() => [new Position(0, 0), new Position(0, 0), new Position(0, 0), new Position(0, 0)];
 	}
 }

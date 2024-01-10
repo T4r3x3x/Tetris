@@ -3,6 +3,10 @@
 	public abstract class AbstractFigure
 	{
 		private const int SegmentsCount = 4;
+
+		//сохраняем поворот фигуры: 0 - 0 градусов, 1 - 90, 2 - 180, 3 - 270
+		protected int _rotateState = 0;
+
 		public Position[] Segments = new Position[SegmentsCount]; //todo переименовать в segmentsPosition
 
 		public bool BelongToFigure(Position segment)
@@ -13,12 +17,17 @@
 
 			return false;
 		}
-		public abstract void Rotate(RotateDirection direction);
-		protected abstract Position[] GetSegmentsDisplacement(RotateDirection direction);
-	}
 
-	public enum RotateDirection
-	{
-		left = -1, right = 1,
+		public void Rotate()
+		{
+			var displacement = GetRotateDisplacement();
+			for (int i = 0; i < Segments.Length; i++)
+				Segments[i] += displacement[i];
+
+			if (++_rotateState > 3)
+				_rotateState = 0;
+		}
+
+		public abstract Position[] GetRotateDisplacement();
 	}
 }

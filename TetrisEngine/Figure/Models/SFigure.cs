@@ -7,17 +7,25 @@
 			for (int i = 0; i < Segments.Length; i++)
 				Segments[i] = startPosition;
 
+			//  01
+			// 23	
+
 			Segments[1].X += 1;
 			Segments[2].Y += 1;
 			Segments[2].X -= 1;
 			Segments[3].Y += 1;
-
-			LeftPos = Segments[3].X;
-			RightPos = Segments[1].X;
-			BottomPos = Segments[3].Y;
 		}
 
-		public override void Rotate(RotateDirection direction) => throw new NotImplementedException();
-		protected override Position[] GetSegmentsDisplacement(RotateDirection direction) => throw new NotImplementedException();
+		public override Position[] GetRotateDisplacement()
+		{
+			return (_rotateState) switch
+			{
+				0 => [new Position(0, 0), new Position(-1, 1), new Position(0, -2), new Position(-1, -1)],
+				1 => [new Position(0, 0), new Position(-1, -1), new Position(2, 0), new Position(1, -1)],
+				2 => [new Position(0, 0), new Position(1, -1), new Position(0, 2), new Position(1, 1)],
+				3 => [new Position(0, 0), new Position(1, 1), new Position(-2, 0), new Position(-1, 1)],
+				_ => throw new ArgumentOutOfRangeException()
+			};
+		}
 	}
 }

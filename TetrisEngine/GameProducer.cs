@@ -52,64 +52,44 @@ namespace TetrisEngine
 			isPause = false;
 		}
 
-		public void MoveFigureLeft()//проверка что слева нет ничего 
+		public void MoveFigureLeft()
 		{
-			if (_figure.LeftPos == 0)
-				return;
-
 			if (!CanMove(_figure, MoveDirection.Left))
 				return;
 
 			MoveFigure(_figure, MoveDirection.Left);
-
-			_figure.LeftPos--;
-			_figure.RightPos--;
 			OnGameFieldChanged(_gameField);
 		}
 
-		public void MoveFigureRight()//проверка что справа нет ничего
+		public void MoveFigureRight()
 		{
-			if (_figure.RightPos == Width - 1)
-				return;
-
 			if (!CanMove(_figure, MoveDirection.Right))
 				return;
 
 			MoveFigure(_figure, MoveDirection.Right);
-
-			_figure.LeftPos++;
-			_figure.RightPos++;
 			OnGameFieldChanged(_gameField);
 		}
 
 		public void MoveFigureDown()
 		{
-			if (_figure.BottomPos == Height - 1)
-				return;
-
 			if (!CanMove(_figure, MoveDirection.Down))
 				return;
 
 			MoveFigure(_figure, MoveDirection.Down);
-
-			_figure.BottomPos++;
 			OnGameFieldChanged(_gameField);
 		}
 
 		public void RotateFigure()
 		{
-			//todo добавить проверку что повернуть фигуру вообще возможно
-			EraseFigure();
-			_figure.Rotate(RotateDirection.right);
-			if (!CanPutFigure())
-			{
-				_figure.Rotate(RotateDirection.left);
+			if (!CanRotateFigure())//Обобщить canRotate и canMove
 				return;
-			}
 
+			EraseFigure();
+			_figure.Rotate();
 			AddSegmentsToGameField(_figure.Segments);
 			OnGameFieldChanged(_gameField);
 		}
+
 
 		#endregion
 
@@ -123,7 +103,7 @@ namespace TetrisEngine
 					if (!TryPutNewFigure())
 						isGameOver = true;
 
-					while (CanMoveDown())
+					while (CanMove(_figure, MoveDirection.Down))
 					{
 						Thread.Sleep(Delay);
 						//	MoveFigureDown();
@@ -142,13 +122,26 @@ namespace TetrisEngine
 		}
 		private bool CanRotateFigure()
 		{
-			return CanPutFigure();
+			var displacement = _figure.GetRotateDisplacement();
+			for (int i = 0; i < _figure.Segments.Length; i++)
+			{
+				var cellPosition = _figure.Segments[i] + displacement[i];
+				if (!IsSegmentBelongToGameField(cellPosition))
+					return false;
+
+				var cell = _gameField[cellPosition.Y][cellPosition.X];
+				if (cell.Filled && !_figure.BelongToFigure(cellPosition))
+					return false;
+			}
+
+			return true;
 		}
+
 
 		private bool CanPutFigure()
 		{
 			foreach (var segment in _figure.Segments)
-				if (_gameField[segment.Y][segment.X].Filled)
+				if (!IsSegmentBelongToGameField(segment) || _gameField[segment.Y][segment.X].Filled)
 					return false;
 
 			return true;
@@ -161,13 +154,23 @@ namespace TetrisEngine
 			for (int i = 0; i < figure.Segments.Length; i++)
 			{
 				var cellPosition = figure.Segments[i] + moveDirection;
-				var cell = _gameField[cellPosition.Y][cellPosition.X];
+				if (!IsSegmentBelongToGameField(cellPosition))
+					return false;
 
+				var cell = _gameField[cellPosition.Y][cellPosition.X];
 				if (cell.Filled && !figure.BelongToFigure(cellPosition))
 					return false;
 			}
 
 			return true;
+		}
+
+		private bool IsSegmentBelongToGameField(Position segment)
+		{
+			if (-1 < segment.X && segment.X < Width && -1 < segment.Y && segment.Y < Height)
+				return true;
+
+			return false;
 		}
 
 		private void MoveFigure(AbstractFigure figure, MoveDirection direction)
@@ -220,26 +223,13 @@ namespace TetrisEngine
 			}
 		}
 
-		private bool CanMoveDown()
-		{
-			if (_figure.BottomPos == Height - 1)
-				return false;
-
-			for (int i = 0; i < _figure.Segments.Length; i++)
-				if (_figure.Segments[i].Y == _figure.BottomPos)
-					if (_gameField[_figure.Segments[i].Y + 1][_figure.Segments[i].X].Filled)
-						return false;
-
-			return true;
-		}
-
 		private void EraseFilledRows()
 		{
 			for (int i = Height - 1; i > 0;)
 			{
 				if (NeedToDelete(_gameField[i]))
 				{
-					DeleteRow(i);
+					EraseRow(i);
 					_countOfErasedRows++;
 				}
 				else
@@ -256,7 +246,7 @@ namespace TetrisEngine
 			return true;
 		}
 
-		private void DeleteRow(int rowNumber)
+		private void EraseRow(int rowNumber)
 		{
 			for (int i = 0; i < Width; i++)
 				_gameField[rowNumber][i].Filled = false;

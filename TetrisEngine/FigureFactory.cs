@@ -11,7 +11,7 @@ namespace TetrisEngine
 		public AbstractFigure GetFigure(Position startPosition)
 		{
 			var figure = (Figuries)_random.Next(figuriesCount);
-			return new LineFigure(startPosition);
+			return new ZFigure(startPosition);
 			return figure switch
 			{
 				Figuries.I => new LineFigure(startPosition),

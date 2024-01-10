@@ -1,6 +1,6 @@
 ﻿namespace TetrisEngine
 {
-	public struct Position : ICloneable
+	public struct Position
 	{
 		public int X, Y;
 
