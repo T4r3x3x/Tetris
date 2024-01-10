@@ -8,7 +8,7 @@
 			for (int i = 0; i < Segments.Length; i++)
 			{
 				Segments[i] = startPosition;
-				Segments[i].Y += i;
+				Segments[i].X += i;
 			}
 		}
 
@@ -16,8 +16,8 @@
 		{
 			return (_rotateState % 2) switch
 			{
-				1 => [new Position(1, -1), new Position(0, 0), new Position(-1, 1), new Position(-2, 2)],
-				0 => [new Position(-1, 1), new Position(0, 0), new Position(1, -1), new Position(2, -2)],
+				0 => [new Position(1, -1), new Position(0, 0), new Position(-1, 1), new Position(-2, 2)],
+				1 => [new Position(-1, 1), new Position(0, 0), new Position(1, -1), new Position(2, -2)],
 				_ => throw new ArgumentOutOfRangeException()
 			};
 		}

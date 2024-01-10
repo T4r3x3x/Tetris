@@ -4,7 +4,7 @@ namespace TetrisEngine
 {
 	public class GameProducer
 	{
-		private const int Width = 18, Height = 12;
+		private const int Width = 10, Height = 20;
 
 		private int _countOfErasedRows = 0;
 		private readonly Position _startPosition = new(6, 0);
@@ -106,7 +106,7 @@ namespace TetrisEngine
 					while (CanMove(_figure, MoveDirection.Down))
 					{
 						Thread.Sleep(Delay);
-						//	MoveFigureDown();
+						MoveFigureDown();
 					}
 					EraseFilledRows();
 				}
@@ -270,5 +270,4 @@ namespace TetrisEngine
 	{
 		Left, Right, Down
 	}
-
 }

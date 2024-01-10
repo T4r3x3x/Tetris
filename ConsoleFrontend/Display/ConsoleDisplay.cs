@@ -7,24 +7,27 @@ namespace ConsoleFrontend.Display
 	public class ConsoleDisplay
 	{
 		private IReadOnlyCollection<IReadOnlyCollection<Cell>> _gameFieldLastDraw;
-		private CancellationTokenSource cancelTokenSource;
+		private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 		private CancellationToken token;
 		private Task printTask;
 		private bool isPrinting = false;
 		private object _sync = new object();
 
+		public ConsoleDisplay()
+		{
+			token = cancelTokenSource.Token;
+		}
+
 		public void Display(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameField)
 		{
-			if (isPrinting)
-				if (token.CanBeCanceled)
-					cancelTokenSource.Cancel();
-
 			_gameFieldLastDraw = gameField;
-			cancelTokenSource = new CancellationTokenSource();
-			token = cancelTokenSource.Token;
 			printTask = new Task(() => Print(gameField), token);
 			printTask.Start();
+		}
 
+		public void StopDisplay()
+		{
+			cancelTokenSource.Cancel();
 		}
 
 		public void Update()
