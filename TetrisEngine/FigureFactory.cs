@@ -7,7 +7,7 @@ namespace TetrisEngine
 	{
 		private readonly Random _random = new Random();
 		private const int figuriesCount = 7;
-		private int i = 0;
+
 		public AbstractFigure GetFigure(Position startPosition)
 		{
 			var figure = (Figuries)_random.Next(figuriesCount);

@@ -9,7 +9,7 @@
 
 		public Position[] Segments = new Position[SegmentsCount]; //todo переименовать в segmentsPosition
 
-		public bool BelongToFigure(Position segment)
+		public bool IsBelong(Position segment)
 		{
 			foreach (var figureSegment in Segments)
 				if (figureSegment == segment)

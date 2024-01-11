@@ -6,11 +6,11 @@ namespace ConsoleFrontend.Display
 {
 	public class ConsoleDisplay
 	{
-		private IReadOnlyCollection<IReadOnlyCollection<Cell>> _gameFieldLastDraw;
+		private Cell[][] _gameFieldLastFrame;
+
 		private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 		private CancellationToken token;
 		private Task printTask;
-		private bool isPrinting = false;
 		private object _sync = new object();
 
 		public ConsoleDisplay()
@@ -18,9 +18,9 @@ namespace ConsoleFrontend.Display
 			token = cancelTokenSource.Token;
 		}
 
-		public void Display(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameField)
+		public void Display(Cell[][] gameField)
 		{
-			_gameFieldLastDraw = gameField;
+			_gameFieldLastFrame = gameField;
 			printTask = new Task(() => Print(gameField), token);
 			printTask.Start();
 		}
@@ -32,14 +32,26 @@ namespace ConsoleFrontend.Display
 
 		public void Update()
 		{
-			Display(_gameFieldLastDraw);
+			Display(_gameFieldLastFrame);
 		}
+
+		private List<List<bool>> GetFramesDifference(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameFieldCurrentFrame)
+		{
+			var differenceMap = gameFieldCurrentFrame.Select(row => row.Select(cell => cell.Filled).ToList()).ToList();
+			var lastFrameFill = _gameFieldLastFrame.Select(row => row.Select(cell => cell.Filled).ToList()).ToList();
+
+			for (int i = 0; i < differenceMap.Count; i++)
+				for (int j = 0; j < differenceMap[0].Count; j++)
+					differenceMap[i][j] = differenceMap[i][j] == lastFrameFill[i][j];
+
+			return differenceMap;
+		}
+
 
 		private void Print(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameField)
 		{
 			lock (_sync)
 			{
-				isPrinting = true;
 				Console.Clear();
 				var width = gameField.First().Count;
 				DisplayVerticalLine(width);
@@ -47,7 +59,6 @@ namespace ConsoleFrontend.Display
 					DisplayRow((Cell[])row);
 
 				DisplayVerticalLine(width);
-				isPrinting = false;
 			}
 		}
 

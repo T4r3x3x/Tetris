@@ -18,7 +18,7 @@ namespace TetrisEngine
 
 		private Cell[][] _gameField;
 
-		public delegate void GameFieldChangeHandler(IReadOnlyCollection<IReadOnlyCollection<Cell>> cells);
+		public delegate void GameFieldChangeHandler(Cell[][] cells);
 		public event GameFieldChangeHandler OnGameFieldChanged;
 
 		public GameProducer(int startDelay)
@@ -57,29 +57,17 @@ namespace TetrisEngine
 
 		public void MoveFigureLeft()
 		{
-			if (!CanMove(_figure, MoveDirection.Left))
-				return;
-
-			MoveFigure(_figure, MoveDirection.Left);
-			OnGameFieldChanged(_gameField);
+			Move(MoveDirection.Left);
 		}
 
 		public void MoveFigureRight()
 		{
-			if (!CanMove(_figure, MoveDirection.Right))
-				return;
-
-			MoveFigure(_figure, MoveDirection.Right);
-			OnGameFieldChanged(_gameField);
+			Move(MoveDirection.Right);
 		}
 
 		public void MoveFigureDown()
 		{
-			if (!CanMove(_figure, MoveDirection.Down))
-				return;
-
-			MoveFigure(_figure, MoveDirection.Down);
-			OnGameFieldChanged(_gameField);
+			Move(MoveDirection.Down);
 		}
 
 		public void RotateFigure()
@@ -92,8 +80,6 @@ namespace TetrisEngine
 			AddSegmentsToGameField(_figure.Segments);
 			OnGameFieldChanged(_gameField);
 		}
-
-
 		#endregion
 
 		private int ProduceGame()
@@ -124,6 +110,7 @@ namespace TetrisEngine
 			foreach (var segmemt in _figure.Segments)
 				_gameField[segmemt.Y][segmemt.X].Filled = false;
 		}
+
 		private bool CanRotateFigure()
 		{
 			var displacement = _figure.GetRotateDisplacement();
@@ -134,13 +121,21 @@ namespace TetrisEngine
 					return false;
 
 				var cell = _gameField[cellPosition.Y][cellPosition.X];
-				if (cell.Filled && !_figure.BelongToFigure(cellPosition))
+				if (cell.Filled && !_figure.IsBelong(cellPosition))
 					return false;
 			}
 
 			return true;
 		}
 
+		private void Move(MoveDirection direction)//название похоже на MoveFigure изменить.
+		{
+			if (!CanMove(_figure, direction))
+				return;
+
+			MoveFigure(_figure, direction);
+			OnGameFieldChanged(_gameField);
+		}
 
 		private bool CanPutFigure()
 		{
@@ -162,20 +157,14 @@ namespace TetrisEngine
 					return false;
 
 				var cell = _gameField[cellPosition.Y][cellPosition.X];
-				if (cell.Filled && !figure.BelongToFigure(cellPosition))
+				if (cell.Filled && !figure.IsBelong(cellPosition))
 					return false;
 			}
 
 			return true;
 		}
 
-		private bool IsSegmentBelongToGameField(Position segment)
-		{
-			if (-1 < segment.X && segment.X < Width && -1 < segment.Y && segment.Y < Height)
-				return true;
-
-			return false;
-		}
+		private bool IsSegmentBelongToGameField(Position segment) => (-1 < segment.X && segment.X < Width) && (-1 < segment.Y && segment.Y < Height);
 
 		private void MoveFigure(AbstractFigure figure, MoveDirection direction)
 		{
@@ -186,7 +175,8 @@ namespace TetrisEngine
 				var oldPosition = figure.Segments[i];
 				figure.Segments[i] += moveDirection;
 				_gameField[figure.Segments[i].Y][figure.Segments[i].X].Filled = true;
-				if (!figure.BelongToFigure(oldPosition))
+
+				if (!figure.IsBelong(oldPosition))
 					_gameField[oldPosition.Y][oldPosition.X].Filled = false;
 			}
 		}
