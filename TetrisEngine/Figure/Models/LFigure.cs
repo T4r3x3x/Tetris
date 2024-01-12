@@ -2,18 +2,9 @@
 {
 	internal class LFigure : AbstractFigure
 	{
-		public LFigure(Position startPosition)
-		{
-			for (int i = 0; i < Segments.Length; i++)
-				Segments[i] = startPosition;
-
-			Segments[1].Y += 1;
-			Segments[2].Y += 2;
-			Segments[3].Y += 2;
-			Segments[3].X += 1;
-		}
-
-		public override Position[] GetRotateDisplacement()
+		public LFigure(Position startPosition) : base(startPosition) { }
+		protected override Position[] _segmentsLocalPosition => [new(0, 0), new(0, 1), new(0, 2), new(1, 2)];
+		public override Position[] GetRotationDisplacement()
 		{
 			return (_rotateState) switch
 			{

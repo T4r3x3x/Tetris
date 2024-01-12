@@ -2,17 +2,11 @@
 {
 	internal class OFigure : AbstractFigure
 	{
-		public OFigure(Position startPosition)
-		{
-			for (int i = 0; i < Segments.Length; i++)
-				Segments[i] = startPosition;
+		public OFigure(Position startPosition) : base(startPosition) { }
 
-			Segments[1].X += 1;
-			Segments[2].Y += 1;
-			Segments[3].Y += 1;
-			Segments[3].X += 1;
-		}
+		protected override Position[] _segmentsLocalPosition => [new(0, 0), new(1, 0), new(0, 1), new(1, 1)];
+
 		//при повороте фигуры ничего не меняется
-		public override Position[] GetRotateDisplacement() => [new Position(0, 0), new Position(0, 0), new Position(0, 0), new Position(0, 0)];
+		public override Position[] GetRotationDisplacement() => [new Position(0, 0), new Position(0, 0), new Position(0, 0), new Position(0, 0)];
 	}
 }

@@ -3,16 +3,11 @@
 	internal class LineFigure : AbstractFigure
 	{
 
-		public LineFigure(Position startPosition)
-		{
-			for (int i = 0; i < Segments.Length; i++)
-			{
-				Segments[i] = startPosition;
-				Segments[i].X += i;
-			}
-		}
+		public LineFigure(Position startPosition) : base(startPosition) { }
 
-		public override Position[] GetRotateDisplacement()
+		protected override Position[] _segmentsLocalPosition => [new(0, 0), new(1, 0), new(2, 0), new(3, 0)];
+
+		public override Position[] GetRotationDisplacement()
 		{
 			return (_rotateState % 2) switch
 			{

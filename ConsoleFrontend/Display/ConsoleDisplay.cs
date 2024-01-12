@@ -15,12 +15,13 @@ namespace ConsoleFrontend.Display
 
 		public ConsoleDisplay()
 		{
-			token = cancelTokenSource.Token;
+
 		}
 
 		public void Display(Cell[][] gameField)
 		{
 			_gameFieldLastFrame = gameField;
+			token = cancelTokenSource.Token;
 			printTask = new Task(() => Print(gameField), token);
 			printTask.Start();
 		}
@@ -37,8 +38,8 @@ namespace ConsoleFrontend.Display
 
 		private List<List<bool>> GetFramesDifference(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameFieldCurrentFrame)
 		{
-			var differenceMap = gameFieldCurrentFrame.Select(row => row.Select(cell => cell.Filled).ToList()).ToList();
-			var lastFrameFill = _gameFieldLastFrame.Select(row => row.Select(cell => cell.Filled).ToList()).ToList();
+			var differenceMap = gameFieldCurrentFrame.Select(row => row.Select(cell => cell.IsFilled).ToList()).ToList();
+			var lastFrameFill = _gameFieldLastFrame.Select(row => row.Select(cell => cell.IsFilled).ToList()).ToList();
 
 			for (int i = 0; i < differenceMap.Count; i++)
 				for (int j = 0; j < differenceMap[0].Count; j++)
@@ -81,7 +82,7 @@ namespace ConsoleFrontend.Display
 		private void DisplayCell(Cell cell)
 		{
 			Console.ForegroundColor = ClosestConsoleColor(cell.Color);//(ConsoleColor)(cell.Color.ToArgb() & 0xFFFFFF);
-			var symbol = cell.Filled ? '#' : ' ';
+			var symbol = cell.IsFilled ? '#' : ' ';
 			Console.Write(symbol);
 			Console.ForegroundColor = ConsoleColor.Black;
 		}

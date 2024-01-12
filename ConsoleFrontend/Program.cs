@@ -26,7 +26,7 @@ game.Wait();
 var countOfErasedRows = game.Result;
 
 inputReader.StopReading();
-controller.Wait();
+//controller.Wait();
 
 Console.Clear();
 Console.WriteLine(string.Format("Game over! You have erased {0} rows!", countOfErasedRows));

@@ -25,8 +25,8 @@ namespace ConsoleFrontend.Input
 
 		public void StopReading()
 		{
-			isListening = false;
 			_consoleDisplay.StopDisplay();
+			isListening = false;
 		}
 	}
 }

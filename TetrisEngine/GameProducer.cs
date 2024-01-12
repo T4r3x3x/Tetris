@@ -18,7 +18,7 @@ namespace TetrisEngine
 
 		private Cell[][] _gameField;
 
-		public delegate void GameFieldChangeHandler(Cell[][] cells);
+		public delegate void GameFieldChangeHandler(Cell[][] cells);//передавать копию!!!!!!!
 		public event GameFieldChangeHandler OnGameFieldChanged;
 
 		public GameProducer(int startDelay)
@@ -55,131 +55,126 @@ namespace TetrisEngine
 			isPause = false;
 		}
 
-		public void MoveFigureLeft()
-		{
-			Move(MoveDirection.Left);
-		}
+		public void MoveFigureLeft() => MoveFigure(MoveDirection.Left);
 
-		public void MoveFigureRight()
-		{
-			Move(MoveDirection.Right);
-		}
+		public void MoveFigureRight() => MoveFigure(MoveDirection.Right);
 
-		public void MoveFigureDown()
-		{
-			Move(MoveDirection.Down);
-		}
+		public void MoveFigureDown() => MoveFigure(MoveDirection.Down);
 
 		public void RotateFigure()
 		{
 			if (!CanRotateFigure())//Обобщить canRotate и canMove
 				return;
 
-			EraseFigure();
+			Position[] OldSegmentsPosition = new Position[_figure.SegmentsPosition.Count()];
+			_figure.SegmentsPosition.ToList().CopyTo(OldSegmentsPosition, 0);
+
 			_figure.Rotate();
-			AddSegmentsToGameField(_figure.Segments);
+			RefillGameField(OldSegmentsPosition);
+
 			OnGameFieldChanged(_gameField);
 		}
 		#endregion
 
 		private int ProduceGame()
 		{
-			while (!isGameOver)//можно заменить на тру ничего не поменяется
+			while (TryPutNewFigure())
 			{
 				if (!isPause)
 				{
-					CreateNewFigure();
-					if (!TryPutNewFigure())
-						isGameOver = true;
-
 					while (CanMove(_figure, MoveDirection.Down))
 					{
 						Thread.Sleep(_delay);
-						MoveFigureDown();
+						//	MoveFigureDown();
 					}
 					var erasedRowsOnThisIter = EraseFilledRows();
 					IncreaseGameSpeed(erasedRowsOnThisIter);
 				}
 			}
+			isGameOver = true;
 			return _countOfErasedRows;
 		}
 
-
 		private void EraseFigure()
 		{
-			foreach (var segmemt in _figure.Segments)
-				_gameField[segmemt.Y][segmemt.X].Filled = false;
+			foreach (var segmemt in _figure.SegmentsPosition)
+				_gameField[segmemt.Y][segmemt.X].IsFilled = false;
 		}
 
 		private bool CanRotateFigure()
 		{
-			var displacement = _figure.GetRotateDisplacement();
-			for (int i = 0; i < _figure.Segments.Length; i++)
+			var displacement = _figure.GetRotationDisplacement();
+			var segmentsPosition = _figure.SegmentsPosition.ToArray();
+
+			for (int i = 0; i < segmentsPosition.Length; i++)
 			{
-				var cellPosition = _figure.Segments[i] + displacement[i];
+				var cellPosition = segmentsPosition[i] + displacement[i];
 				if (!IsSegmentBelongToGameField(cellPosition))
 					return false;
 
 				var cell = _gameField[cellPosition.Y][cellPosition.X];
-				if (cell.Filled && !_figure.IsBelong(cellPosition))
+				if (cell.IsFilled && !_figure.IsBelong(cellPosition))
+					return false;
+			}
+
+			return true;
+		}
+		private bool CanMove(AbstractFigure figure, MoveDirection direction)
+		{
+			var moveDirection = GetMoveVector(direction);
+			var segmentsPosition = _figure.SegmentsPosition.ToArray();
+
+			for (int i = 0; i < segmentsPosition.Length; i++)
+			{
+				var cellPosition = segmentsPosition[i] + moveDirection;
+				if (!IsSegmentBelongToGameField(cellPosition))
+					return false;
+
+				var cell = _gameField[cellPosition.Y][cellPosition.X];
+				if (cell.IsFilled && !figure.IsBelong(cellPosition))
 					return false;
 			}
 
 			return true;
 		}
 
-		private void Move(MoveDirection direction)//название похоже на MoveFigure изменить.
+		private void MoveFigure(MoveDirection direction)//название похоже на MoveFigure изменить.
 		{
 			if (!CanMove(_figure, direction))
 				return;
 
-			MoveFigure(_figure, direction);
+			var moveDirection = GetMoveVector(direction);
+			Position[] OldSegmentsPosition = new Position[_figure.SegmentsPosition.Count()];
+			_figure.SegmentsPosition.ToList().CopyTo(OldSegmentsPosition, 0);
+
+			_figure.Move(moveDirection);
+			RefillGameField(OldSegmentsPosition.ToArray());
+
 			OnGameFieldChanged(_gameField);
+		}
+
+		private void RefillGameField(IEnumerable<Position> figureOldSegmentsPosition)
+		{
+			foreach (var segment in _figure.SegmentsPosition)
+				_gameField[segment.Y][segment.X].IsFilled = true;
+
+			foreach (var segment in figureOldSegmentsPosition)
+				if (!_figure.IsBelong(segment))
+					_gameField[segment.Y][segment.X].IsFilled = false;
 		}
 
 		private bool CanPutFigure()
 		{
-			foreach (var segment in _figure.Segments)
-				if (!IsSegmentBelongToGameField(segment) || _gameField[segment.Y][segment.X].Filled)
+			foreach (var segment in _figure.SegmentsPosition)
+				if (!IsSegmentBelongToGameField(segment) || _gameField[segment.Y][segment.X].IsFilled)
 					return false;
 
 			return true;
 		}
 
-		private bool CanMove(AbstractFigure figure, MoveDirection direction)
-		{
-			var moveDirection = GetMoveVector(direction);
-
-			for (int i = 0; i < figure.Segments.Length; i++)
-			{
-				var cellPosition = figure.Segments[i] + moveDirection;
-				if (!IsSegmentBelongToGameField(cellPosition))
-					return false;
-
-				var cell = _gameField[cellPosition.Y][cellPosition.X];
-				if (cell.Filled && !figure.IsBelong(cellPosition))
-					return false;
-			}
-
-			return true;
-		}
 
 		private bool IsSegmentBelongToGameField(Position segment) => (-1 < segment.X && segment.X < Width) && (-1 < segment.Y && segment.Y < Height);
 
-		private void MoveFigure(AbstractFigure figure, MoveDirection direction)
-		{
-			var moveDirection = GetMoveVector(direction);
-
-			for (int i = 0; i < figure.Segments.Length; i++)
-			{
-				var oldPosition = figure.Segments[i];
-				figure.Segments[i] += moveDirection;
-				_gameField[figure.Segments[i].Y][figure.Segments[i].X].Filled = true;
-
-				if (!figure.IsBelong(oldPosition))
-					_gameField[oldPosition.Y][oldPosition.X].Filled = false;
-			}
-		}
 
 		private Position GetMoveVector(MoveDirection direction)
 		{
@@ -198,23 +193,21 @@ namespace TetrisEngine
 
 		private bool TryPutNewFigure()
 		{
+			CreateNewFigure();
+
 			if (!CanPutFigure())
 				return false;
 
-			AddSegmentsToGameField(_figure.Segments);
+			PutFigure();
 			OnGameFieldChanged(_gameField);
 
 			return true;
 		}
 
-		private void AddSegmentsToGameField(Position[] segmentsPosition)
+		private void PutFigure()
 		{
-			foreach (var pos in segmentsPosition)
-			{
-				var i = pos.X;
-				var j = pos.Y;
-				_gameField[j][i].Filled = true;
-			}
+			foreach (var pos in _figure.SegmentsPosition)
+				_gameField[pos.Y][pos.X].IsFilled = true;
 		}
 
 		private void IncreaseGameSpeed(int incresingCount)
@@ -241,10 +234,14 @@ namespace TetrisEngine
 			return countOfErasedRows;
 		}
 
+		//
+		//Метод IsEmpty || CanPut использовать для проверки передвижения?
+		//
+
 		private bool NeedToDelete(Cell[] row)
 		{
 			for (int i = 0; i < row.Length; i++)
-				if (row[i].Filled == false)
+				if (row[i].IsFilled == false)
 					return false;
 
 			return true;
@@ -253,7 +250,7 @@ namespace TetrisEngine
 		private void EraseRow(int rowNumber)
 		{
 			for (int i = 0; i < Width; i++)
-				_gameField[rowNumber][i].Filled = false;
+				_gameField[rowNumber][i].IsFilled = false;
 
 			MoveFilledCellsDown(rowNumber);
 		}
@@ -261,10 +258,10 @@ namespace TetrisEngine
 		private void MoveFilledCellsDown(int startRow)
 		{
 			for (int i = 0; i < Width; i++)
-				for (int j = startRow; j > 0 && _gameField[j - 1][i].Filled != false; j--)
+				for (int j = startRow; j > 0 && _gameField[j - 1][i].IsFilled != false; j--)
 				{
-					_gameField[j][i].Filled = true;
-					_gameField[j - 1][i].Filled = false;
+					_gameField[j][i].IsFilled = true;
+					_gameField[j - 1][i].IsFilled = false;
 				}
 		}
 

@@ -2,21 +2,11 @@
 {
 	internal class SFigure : AbstractFigure
 	{
-		public SFigure(Position startPosition)
-		{
-			for (int i = 0; i < Segments.Length; i++)
-				Segments[i] = startPosition;
+		public SFigure(Position startPosition) : base(startPosition) { }
 
-			//  01
-			// 23	
+		protected override Position[] _segmentsLocalPosition => [new(0, 0), new(1, 0), new(-1, 1), new(0, 1)];
 
-			Segments[1].X += 1;
-			Segments[2].Y += 1;
-			Segments[2].X -= 1;
-			Segments[3].Y += 1;
-		}
-
-		public override Position[] GetRotateDisplacement()
+		public override Position[] GetRotationDisplacement()
 		{
 			return (_rotateState) switch
 			{

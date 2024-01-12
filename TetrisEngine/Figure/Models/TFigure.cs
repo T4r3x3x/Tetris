@@ -2,17 +2,11 @@
 {
 	internal class TFigure : AbstractFigure
 	{
-		public TFigure(Position startPosition)
-		{
-			for (int i = 0; i < Segments.Length; i++)
-				Segments[i] = startPosition;
+		public TFigure(Position startPosition) : base(startPosition) { }
 
-			Segments[0].X -= 1;
-			Segments[2].X += 1;
-			Segments[3].Y += 1;
-		}
+		protected override Position[] _segmentsLocalPosition => [new(-1, 0), new(0, 0), new(1, 0), new(0, 1)];
 
-		public override Position[] GetRotateDisplacement()
+		public override Position[] GetRotationDisplacement()
 		{
 			return (_rotateState) switch
 			{

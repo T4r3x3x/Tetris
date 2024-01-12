@@ -7,27 +7,42 @@
 		//сохраняем поворот фигуры: 0 - 0 градусов, 1 - 90, 2 - 180, 3 - 270
 		protected int _rotateState = 0;
 
-		public Position[] Segments = new Position[SegmentsCount]; //todo переименовать в segmentsPosition
+		protected AbstractFigure(Position createPosition)
+		{
+			for (int i = 0; i < _segmentsPosition.Length; i++)
+				_segmentsPosition[i] = createPosition + _segmentsLocalPosition[i];
+		}
+
+		protected abstract Position[] _segmentsLocalPosition { get; }
+		protected Position[] _segmentsPosition = new Position[SegmentsCount];
+
+		public IEnumerable<Position> SegmentsPosition => _segmentsPosition;
 
 		public bool IsBelong(Position segment)
 		{
-			foreach (var figureSegment in Segments)
+			foreach (var figureSegment in _segmentsPosition)
 				if (figureSegment == segment)
 					return true;
 
 			return false;
 		}
 
+		public void Move(Position moveVector)
+		{
+			for (int i = 0; i < _segmentsPosition.Length; i++)
+				_segmentsPosition[i] += moveVector;
+		}
+
 		public void Rotate()
 		{
-			var displacement = GetRotateDisplacement();
-			for (int i = 0; i < Segments.Length; i++)
-				Segments[i] += displacement[i];
+			var displacement = GetRotationDisplacement();
+			for (int i = 0; i < _segmentsPosition.Length; i++)
+				_segmentsPosition[i] += displacement[i];
 
 			if (++_rotateState > 3)
 				_rotateState = 0;
 		}
 
-		public abstract Position[] GetRotateDisplacement();
+		public abstract Position[] GetRotationDisplacement();
 	}
 }

@@ -1,8 +1,8 @@
 ﻿namespace TetrisEngine
 {
-	public struct Position
+	public readonly struct Position
 	{
-		public int X, Y;
+		public readonly int X, Y;
 
 		public Position(int x, int y)
 		{
