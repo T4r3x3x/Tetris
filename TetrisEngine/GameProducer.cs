@@ -82,7 +82,7 @@ namespace TetrisEngine
 			{
 				if (!isPause)
 				{
-					while (CanMove(_figure, MoveDirection.Down))
+					while (CanMove(MoveDirection.Down))
 					{
 						Thread.Sleep(_delay);
 						//	MoveFigureDown();
@@ -106,41 +106,47 @@ namespace TetrisEngine
 			var displacement = _figure.GetRotationDisplacement();
 			var segmentsPosition = _figure.SegmentsPosition.ToArray();
 
+			Position[] newSegmentsPosition = new Position[_figure.SegmentsPosition.Count()];
+
 			for (int i = 0; i < segmentsPosition.Length; i++)
-			{
-				var cellPosition = segmentsPosition[i] + displacement[i];
-				if (!IsSegmentBelongToGameField(cellPosition))
-					return false;
+				newSegmentsPosition[i] = segmentsPosition[i] + displacement[i];
 
-				var cell = _gameField[cellPosition.Y][cellPosition.X];
-				if (cell.IsFilled && !_figure.IsBelong(cellPosition))
-					return false;
-			}
-
-			return true;
+			return CanExecuteMovement(newSegmentsPosition);
 		}
-		private bool CanMove(AbstractFigure figure, MoveDirection direction)
+
+		private bool CanMove(MoveDirection direction)
 		{
 			var moveDirection = GetMoveVector(direction);
 			var segmentsPosition = _figure.SegmentsPosition.ToArray();
 
+			Position[] newSegmentsPosition = new Position[_figure.SegmentsPosition.Count()];
+
 			for (int i = 0; i < segmentsPosition.Length; i++)
+				newSegmentsPosition[i] = segmentsPosition[i] + moveDirection;
+
+			return CanExecuteMovement(newSegmentsPosition);
+		}
+
+		private bool CanExecuteMovement(Position[] newSegmentsPosition)
+		{
+			for (int i = 0; i < newSegmentsPosition.Length; i++)
 			{
-				var cellPosition = segmentsPosition[i] + moveDirection;
-				if (!IsSegmentBelongToGameField(cellPosition))
+				if (!IsSegmentBelongToGameField(newSegmentsPosition[i]))
 					return false;
 
-				var cell = _gameField[cellPosition.Y][cellPosition.X];
-				if (cell.IsFilled && !figure.IsBelong(cellPosition))
+				var cell = _gameField[newSegmentsPosition[i].Y][newSegmentsPosition[i].X];
+				if (cell.IsFilled && !_figure.IsBelong(newSegmentsPosition[i]))
 					return false;
 			}
 
 			return true;
 		}
 
+
+
 		private void MoveFigure(MoveDirection direction)//название похоже на MoveFigure изменить.
 		{
-			if (!CanMove(_figure, direction))
+			if (!CanMove(direction))
 				return;
 
 			var moveDirection = GetMoveVector(direction);
