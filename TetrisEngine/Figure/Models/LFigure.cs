@@ -6,7 +6,7 @@ namespace TetrisEngine.Figure.Models
 	{
 		public LFigure(Position startPosition) : base(startPosition) { }
 
-		public override Color Color => Color.Brown;
+		public override Color Color => Color.SandyBrown;
 
 		protected override Position[] _segmentsLocalPosition => [new(0, 0), new(0, 1), new(0, 2), new(1, 2)];
 		public override Position[] GetRotationDisplacement()

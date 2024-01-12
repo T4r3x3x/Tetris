@@ -73,8 +73,13 @@ namespace TetrisEngine
 
 			_figure.Rotate();
 			RefillGameField(OldSegmentsPosition);
+			NotifyGameFieldChanged();
+		}
 
-			OnGameFieldChanged(_gameField);
+		private void NotifyGameFieldChanged()
+		{
+			Cell[][] gameFieldCopy = _gameField.Select(x => x.Select(cell => (Cell)cell.Clone()).ToArray()).ToArray();
+			OnGameFieldChanged(gameFieldCopy);
 		}
 		#endregion
 
@@ -179,7 +184,7 @@ namespace TetrisEngine
 			_figure.Move(moveDirection);
 			RefillGameField(OldSegmentsPosition.ToArray());
 
-			OnGameFieldChanged(_gameField);
+			NotifyGameFieldChanged();
 		}
 
 		private Position GetMoveVector(MoveDirection direction)
@@ -202,7 +207,7 @@ namespace TetrisEngine
 				return false;
 
 			PutFigure();
-			OnGameFieldChanged(_gameField);
+			NotifyGameFieldChanged();
 
 			return true;
 		}

@@ -6,6 +6,8 @@ namespace ConsoleFrontend.Display
 {
 	public class ConsoleDisplay
 	{
+		private const int Width = 10, Height = 20;
+
 		private Cell[][] _gameFieldLastFrame;
 
 		private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -13,12 +15,20 @@ namespace ConsoleFrontend.Display
 		private Task printTask;
 		private object _sync = new object();
 
-		public void Display(Cell[][] gameField)
+
+		private void PrintBoundaries()
 		{
-			_gameFieldLastFrame = gameField;
-			token = cancelTokenSource.Token;
-			printTask = new Task(() => Print(gameField), token);
-			printTask.Start();
+			Console.Clear();
+			PrintVerticalLine(Width);
+			for (int i = 0; i < Height; i++)
+			{
+				Console.Write("|");
+				for (int j = 0; j < Width; j++)
+					Console.Write(" ");
+
+				Console.Write("|\n");
+			}
+			PrintVerticalLine(Width);
 		}
 
 		public void StopDisplay()
@@ -26,59 +36,72 @@ namespace ConsoleFrontend.Display
 			cancelTokenSource.Cancel();
 		}
 
-		public void Update()
+		public void EraseKey()
 		{
-			Display(_gameFieldLastFrame);
+			Console.SetCursorPosition(0, Height + 1);
+			Console.Write("");
+		}
+
+		public void Update(Cell[][] gameField)
+		{
+			var differenceMap = GetFramesDifference(gameField);
+			if (_gameFieldLastFrame == null)
+				PrintBoundaries();
+			_gameFieldLastFrame = gameField;
+			RedisplayGameField(gameField, differenceMap);
 		}
 
 		private List<List<bool>> GetFramesDifference(Cell[][] gameFieldCurrentFrame)
 		{
-			var differenceMap = gameFieldCurrentFrame.Select(row => row.Select(cell => cell.IsFilled).ToList()).ToList();
+			List<List<bool>> differenceMap = new List<List<bool>>();
+
+			if (_gameFieldLastFrame == null)
+			{
+				differenceMap = gameFieldCurrentFrame.Select(row => row.Select(cell => cell.IsFilled | true).ToList()).ToList();
+				return differenceMap;
+			}
+
+			differenceMap = gameFieldCurrentFrame.Select(row => row.Select(cell => cell.IsFilled).ToList()).ToList();
 			var lastFrameFill = _gameFieldLastFrame.Select(row => row.Select(cell => cell.IsFilled).ToList()).ToList();
 
 			for (int i = 0; i < differenceMap.Count; i++)
 				for (int j = 0; j < differenceMap[0].Count; j++)
-					differenceMap[i][j] = differenceMap[i][j] == lastFrameFill[i][j];
+					differenceMap[i][j] = differenceMap[i][j] != lastFrameFill[i][j];
 
 			return differenceMap;
 		}
 
 
-		private void Print(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameField)
+		private void RedisplayGameField(Cell[][] gameField, List<List<bool>> differenceMap)
 		{
 			lock (_sync)
 			{
-				Console.Clear();
-				var width = gameField.First().Count;
-				DisplayVerticalLine(width);
-				foreach (var row in gameField)
-					DisplayRow((Cell[])row);
+				for (int i = 0; i < gameField.Length; i++)
+					for (int j = 0; j < gameField[0].Length; j++)
+						if (NeedToRedisplay(differenceMap[i][j]))
+							RedisplayCell(gameField[i][j], i, j);
 
-				DisplayVerticalLine(width);
+				Console.SetCursorPosition(0, Height + 1);
 			}
 		}
 
-		private void DisplayVerticalLine(int width)
+		private bool NeedToRedisplay(bool v) => v;
+
+		private void PrintVerticalLine(int width)
 		{
 			for (int i = 0; i < width + 2; i++)
 				Console.Write('-');
 			Console.WriteLine();
 		}
 
-		private void DisplayRow(Cell[] row)
+		private void RedisplayCell(Cell cell, int top, int left)
 		{
-			Console.Write('|');
-			for (int i = 0; i < row.Length; i++)
-				DisplayCell(row[i]);
+			Console.SetCursorPosition(left + 1, top + 1);
 
-			Console.Write("|\n");
-		}
-
-		private void DisplayCell(Cell cell)
-		{
-			Console.ForegroundColor = ClosestConsoleColor(cell.Color);//(ConsoleColor)(cell.Color.ToArgb() & 0xFFFFFF);
+			Console.ForegroundColor = ClosestConsoleColor(cell.Color);
 			var symbol = cell.IsFilled ? '#' : ' ';
 			Console.Write(symbol);
+
 			Console.ForegroundColor = ConsoleColor.Black;
 		}
 

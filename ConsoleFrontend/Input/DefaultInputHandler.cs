@@ -38,7 +38,7 @@ namespace ConsoleFrontend.Input
 					_game.Resume();
 					break;
 			}
-			_display.Update();
+			_display.EraseKey();
 			Thread.Sleep(100);
 		}
 	}

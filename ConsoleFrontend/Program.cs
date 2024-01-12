@@ -9,7 +9,7 @@ var display = new ConsoleDisplay();
 GameProducer gameProducer = new(Delay);
 var inputHandler = new DefaultInputHandler(gameProducer, display);
 var inputReader = new ConsoleInputController(inputHandler, display);
-gameProducer.OnGameFieldChanged += display.Display;
+gameProducer.OnGameFieldChanged += display.Update;
 
 
 WaitUntilPressedStart();

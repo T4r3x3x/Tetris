@@ -2,7 +2,7 @@
 
 namespace TetrisEngine
 {
-	public class Cell
+	public class Cell : ICloneable
 	{
 		public bool IsFilled;
 		public Color Color;
@@ -14,5 +14,7 @@ namespace TetrisEngine
 		}
 
 		public static readonly Color DefaultColor = Color.Black;
+
+		public object Clone() => new Cell(IsFilled, Color);
 	}
 }
