@@ -13,11 +13,6 @@ namespace ConsoleFrontend.Display
 		private Task printTask;
 		private object _sync = new object();
 
-		public ConsoleDisplay()
-		{
-
-		}
-
 		public void Display(Cell[][] gameField)
 		{
 			_gameFieldLastFrame = gameField;
@@ -36,7 +31,7 @@ namespace ConsoleFrontend.Display
 			Display(_gameFieldLastFrame);
 		}
 
-		private List<List<bool>> GetFramesDifference(IReadOnlyCollection<IReadOnlyCollection<Cell>> gameFieldCurrentFrame)
+		private List<List<bool>> GetFramesDifference(Cell[][] gameFieldCurrentFrame)
 		{
 			var differenceMap = gameFieldCurrentFrame.Select(row => row.Select(cell => cell.IsFilled).ToList()).ToList();
 			var lastFrameFill = _gameFieldLastFrame.Select(row => row.Select(cell => cell.IsFilled).ToList()).ToList();

@@ -1,8 +1,13 @@
-﻿namespace TetrisEngine.Figure.Models
+﻿using System.Drawing;
+
+namespace TetrisEngine.Figure.Models
 {
 	internal class LFigure : AbstractFigure
 	{
 		public LFigure(Position startPosition) : base(startPosition) { }
+
+		public override Color Color => Color.Brown;
+
 		protected override Position[] _segmentsLocalPosition => [new(0, 0), new(0, 1), new(0, 2), new(1, 2)];
 		public override Position[] GetRotationDisplacement()
 		{

@@ -6,11 +6,11 @@ namespace TetrisEngine
 	internal class FigureFactory
 	{
 		private readonly Random _random = new Random();
-		private const int figuriesCount = 7;
+		private const int FiguriesCount = 7;
 
 		public AbstractFigure GetFigure(Position startPosition)
 		{
-			var figure = (Figuries)_random.Next(figuriesCount);
+			var figure = (Figuries)_random.Next(FiguriesCount);
 
 			return figure switch
 			{

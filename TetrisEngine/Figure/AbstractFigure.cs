@@ -1,4 +1,6 @@
-﻿namespace TetrisEngine.Figure
+﻿using System.Drawing;
+
+namespace TetrisEngine.Figure
 {
 	public abstract class AbstractFigure
 	{
@@ -14,7 +16,10 @@
 		}
 
 		protected abstract Position[] _segmentsLocalPosition { get; }
+
 		protected Position[] _segmentsPosition = new Position[SegmentsCount];
+
+		public abstract Color Color { get; }
 
 		public IEnumerable<Position> SegmentsPosition => _segmentsPosition;
 

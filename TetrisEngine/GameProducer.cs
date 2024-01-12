@@ -10,7 +10,7 @@ namespace TetrisEngine
 		private int _countOfErasedRows = 0;
 		private int _delay;
 
-		private readonly Position _startPosition = new(6, 0);
+		private readonly Position _startPosition = new(5, 0);
 		private bool isGameOver = false, isPause = false;
 
 		private AbstractFigure _figure;
@@ -18,9 +18,10 @@ namespace TetrisEngine
 
 		private Cell[][] _gameField;
 
-		public delegate void GameFieldChangeHandler(Cell[][] cells);//передавать копию!!!!!!!
+		public delegate void GameFieldChangeHandler(Cell[][] cells);
 		public event GameFieldChangeHandler OnGameFieldChanged;
 
+		#region Initialization
 		public GameProducer(int startDelay)
 		{
 			_delay = startDelay;
@@ -34,9 +35,10 @@ namespace TetrisEngine
 			{
 				_gameField[i] = new Cell[Width];
 				for (int j = 0; j < _gameField[i].Length; j++)
-					_gameField[i][j] = new Cell(false, System.Drawing.Color.DarkRed);
+					_gameField[i][j] = new Cell(false, Cell.DefaultColor);
 			}
 		}
+		#endregion
 
 		#region API
 
@@ -63,7 +65,7 @@ namespace TetrisEngine
 
 		public void RotateFigure()
 		{
-			if (!CanRotateFigure())//Обобщить canRotate и canMove
+			if (!CanRotateFigure())
 				return;
 
 			Position[] OldSegmentsPosition = new Position[_figure.SegmentsPosition.Count()];
@@ -76,6 +78,7 @@ namespace TetrisEngine
 		}
 		#endregion
 
+		#region Game methods
 		private int ProduceGame()
 		{
 			while (TryPutNewFigure())
@@ -95,12 +98,34 @@ namespace TetrisEngine
 			return _countOfErasedRows;
 		}
 
-		private void EraseFigure()
+		private void IncreaseGameSpeed(int incresingCount)
 		{
-			foreach (var segmemt in _figure.SegmentsPosition)
-				_gameField[segmemt.Y][segmemt.X].IsFilled = false;
+			for (int i = 0; i < incresingCount; i++)
+				_delay = Convert.ToInt32(_delay * (1 - DelayDecrisingPercent));
 		}
+		#endregion
 
+		#region GameField methods
+		private bool IsSegmentBelongToGameField(Position segment) => (-1 < segment.X && segment.X < Width) && (-1 < segment.Y && segment.Y < Height);
+
+		private void RefillGameField(IEnumerable<Position> figureOldSegmentsPosition)
+		{
+			foreach (var segment in _figure.SegmentsPosition)
+			{
+				_gameField[segment.Y][segment.X].IsFilled = true;
+				_gameField[segment.Y][segment.X].Color = _figure.Color;
+			}
+
+			foreach (var segment in figureOldSegmentsPosition)
+				if (!_figure.IsBelong(segment))
+				{
+					_gameField[segment.Y][segment.X].IsFilled = false;
+					_gameField[segment.Y][segment.X].Color = Cell.DefaultColor;
+				}
+		}
+		#endregion
+
+		#region Movement
 		private bool CanRotateFigure()
 		{
 			var displacement = _figure.GetRotationDisplacement();
@@ -142,9 +167,7 @@ namespace TetrisEngine
 			return true;
 		}
 
-
-
-		private void MoveFigure(MoveDirection direction)//название похоже на MoveFigure изменить.
+		private void MoveFigure(MoveDirection direction)
 		{
 			if (!CanMove(direction))
 				return;
@@ -159,29 +182,6 @@ namespace TetrisEngine
 			OnGameFieldChanged(_gameField);
 		}
 
-		private void RefillGameField(IEnumerable<Position> figureOldSegmentsPosition)
-		{
-			foreach (var segment in _figure.SegmentsPosition)
-				_gameField[segment.Y][segment.X].IsFilled = true;
-
-			foreach (var segment in figureOldSegmentsPosition)
-				if (!_figure.IsBelong(segment))
-					_gameField[segment.Y][segment.X].IsFilled = false;
-		}
-
-		private bool CanPutFigure()
-		{
-			foreach (var segment in _figure.SegmentsPosition)
-				if (!IsSegmentBelongToGameField(segment) || _gameField[segment.Y][segment.X].IsFilled)
-					return false;
-
-			return true;
-		}
-
-
-		private bool IsSegmentBelongToGameField(Position segment) => (-1 < segment.X && segment.X < Width) && (-1 < segment.Y && segment.Y < Height);
-
-
 		private Position GetMoveVector(MoveDirection direction)
 		{
 			return direction switch
@@ -191,12 +191,9 @@ namespace TetrisEngine
 				MoveDirection.Down => new Position(0, 1),
 			};
 		}
+		#endregion
 
-		private void CreateNewFigure()
-		{
-			_figure = _figureFactory.GetFigure(_startPosition);
-		}
-
+		#region Creating new figure
 		private bool TryPutNewFigure()
 		{
 			CreateNewFigure();
@@ -210,18 +207,31 @@ namespace TetrisEngine
 			return true;
 		}
 
+		private void CreateNewFigure()
+		{
+			_figure = _figureFactory.GetFigure(_startPosition);
+		}
+
 		private void PutFigure()
 		{
-			foreach (var pos in _figure.SegmentsPosition)
-				_gameField[pos.Y][pos.X].IsFilled = true;
+			foreach (var segment in _figure.SegmentsPosition)
+			{
+				_gameField[segment.Y][segment.X].IsFilled = true;
+				_gameField[segment.Y][segment.X].Color = _figure.Color;
+			}
 		}
 
-		private void IncreaseGameSpeed(int incresingCount)
+		private bool CanPutFigure()
 		{
-			for (int i = 0; i < incresingCount; i++)
-				_delay = Convert.ToInt32(_delay * (1 - DelayDecrisingPercent));
-		}
+			foreach (var segment in _figure.SegmentsPosition)
+				if (!IsSegmentBelongToGameField(segment) || _gameField[segment.Y][segment.X].IsFilled)
+					return false;
 
+			return true;
+		}
+		#endregion
+
+		#region Erasing rows
 		private int EraseFilledRows()
 		{
 			int countOfErasedRows = 0;
@@ -240,19 +250,6 @@ namespace TetrisEngine
 			return countOfErasedRows;
 		}
 
-		//
-		//Метод IsEmpty || CanPut использовать для проверки передвижения?
-		//
-
-		private bool NeedToDelete(Cell[] row)
-		{
-			for (int i = 0; i < row.Length; i++)
-				if (row[i].IsFilled == false)
-					return false;
-
-			return true;
-		}
-
 		private void EraseRow(int rowNumber)
 		{
 			for (int i = 0; i < Width; i++)
@@ -266,11 +263,19 @@ namespace TetrisEngine
 			for (int i = 0; i < Width; i++)
 				for (int j = startRow; j > 0 && _gameField[j - 1][i].IsFilled != false; j--)
 				{
-					_gameField[j][i].IsFilled = true;
-					_gameField[j - 1][i].IsFilled = false;
+					(_gameField[j][i], _gameField[j - 1][i]) = (_gameField[j - 1][i], _gameField[j][i]);
 				}
 		}
 
+		private bool NeedToDelete(Cell[] row)
+		{
+			for (int i = 0; i < row.Length; i++)
+				if (row[i].IsFilled == false)
+					return false;
+
+			return true;
+		}
+		#endregion
 	}
 
 	enum MoveDirection

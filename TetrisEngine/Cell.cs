@@ -12,5 +12,7 @@ namespace TetrisEngine
 			IsFilled = filled;
 			Color = color;
 		}
+
+		public static readonly Color DefaultColor = Color.Black;
 	}
 }

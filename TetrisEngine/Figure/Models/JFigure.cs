@@ -1,8 +1,12 @@
-﻿namespace TetrisEngine.Figure.Models
+﻿using System.Drawing;
+
+namespace TetrisEngine.Figure.Models
 {
 	public class JFigure : AbstractFigure
 	{
 		public JFigure(Position startPosition) : base(startPosition) { }
+
+		public override Color Color => Color.Blue;
 
 		protected override Position[] _segmentsLocalPosition => [new(0, 0), new(0, 1), new(0, 2), new(-1, 2)];
 

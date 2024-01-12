@@ -1,9 +1,13 @@
-﻿namespace TetrisEngine.Figure.Models
+﻿using System.Drawing;
+
+namespace TetrisEngine.Figure.Models
 {
 	internal class LineFigure : AbstractFigure
 	{
 
 		public LineFigure(Position startPosition) : base(startPosition) { }
+
+		public override Color Color => Color.Turquoise;
 
 		protected override Position[] _segmentsLocalPosition => [new(0, 0), new(1, 0), new(2, 0), new(3, 0)];
 
