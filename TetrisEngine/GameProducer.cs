@@ -57,14 +57,32 @@ namespace TetrisEngine
 			isPause = false;
 		}
 
-		public void MoveFigureLeft() => MoveFigure(MoveDirection.Left);
+		public void MoveFigureLeft()
+		{
+			if (isPause)
+				return;
+			MoveFigure(MoveDirection.Left);
+		}
 
-		public void MoveFigureRight() => MoveFigure(MoveDirection.Right);
+		public void MoveFigureRight()
+		{
+			if (isPause)
+				return;
+			MoveFigure(MoveDirection.Right);
+		}
 
-		public void MoveFigureDown() => MoveFigure(MoveDirection.Down);
+		public void MoveFigureDown()
+		{
+			if (isPause)
+				return;
+			MoveFigure(MoveDirection.Down);
+		}
 
 		public void RotateFigure()
 		{
+			if (isPause)
+				return;
+
 			if (!CanRotateFigure())
 				return;
 
@@ -88,16 +106,18 @@ namespace TetrisEngine
 		{
 			while (TryPutNewFigure())
 			{
-				if (!isPause)
+
+				while (CanMove(MoveDirection.Down))
 				{
-					while (CanMove(MoveDirection.Down))
+					if (!isPause)
 					{
 						Thread.Sleep(_delay);
 						MoveFigureDown();
 					}
-					var erasedRowsOnThisIter = EraseFilledRows();
-					IncreaseGameSpeed(erasedRowsOnThisIter);
 				}
+				var erasedRowsOnThisIter = EraseFilledRows();
+				IncreaseGameSpeed(erasedRowsOnThisIter);
+
 			}
 			isGameOver = true;
 			return _countOfErasedRows;
