@@ -1,18 +1,14 @@
-﻿using ConsoleFrontend.Display;
-
-using TetrisEngine;
+﻿using TetrisEngine;
 
 namespace ConsoleFrontend.Input
 {
 	public class DefaultInputHandler : IInputHandler
 	{
 		private readonly GameProducer _game;
-		private readonly ConsoleDisplay _display;
 
-		public DefaultInputHandler(GameProducer game, ConsoleDisplay display)
+		public DefaultInputHandler(GameProducer game)
 		{
 			_game = game;
-			_display = display;
 		}
 
 		public void InputHandle(ConsoleKey key)

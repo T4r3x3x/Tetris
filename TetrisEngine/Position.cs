@@ -1,6 +1,6 @@
 ﻿namespace TetrisEngine
 {
-	public readonly struct Position
+	internal readonly struct Position
 	{
 		public readonly int X, Y;
 

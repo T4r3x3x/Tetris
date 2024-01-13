@@ -4,7 +4,6 @@ namespace TetrisEngine.Figure.Models
 {
 	internal class LineFigure : AbstractFigure
 	{
-
 		public LineFigure(Position startPosition) : base(startPosition) { }
 
 		public override Color Color => Color.Turquoise;

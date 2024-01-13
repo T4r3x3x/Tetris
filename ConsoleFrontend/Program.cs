@@ -7,7 +7,7 @@ const int Delay = 1000;
 
 var display = new ConsoleDisplay();
 GameProducer gameProducer = new(Delay);
-var inputHandler = new DefaultInputHandler(gameProducer, display);
+var inputHandler = new DefaultInputHandler(gameProducer);
 var inputReader = new ConsoleInputController(inputHandler);
 gameProducer.OnGameFieldChanged += display.Update;
 

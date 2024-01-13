@@ -106,7 +106,6 @@ namespace TetrisEngine
 		{
 			while (TryPutNewFigure())
 			{
-
 				while (CanMove(MoveDirection.Down))
 				{
 					if (!isPause)
@@ -117,8 +116,8 @@ namespace TetrisEngine
 				}
 				var erasedRowsOnThisIter = EraseFilledRows();
 				IncreaseGameSpeed(erasedRowsOnThisIter);
-
 			}
+
 			isGameOver = true;
 			return _countOfErasedRows;
 		}

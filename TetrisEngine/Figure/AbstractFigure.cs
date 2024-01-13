@@ -2,7 +2,7 @@
 
 namespace TetrisEngine.Figure
 {
-	public abstract class AbstractFigure
+	internal abstract class AbstractFigure
 	{
 		private const int SegmentsCount = 4;
 

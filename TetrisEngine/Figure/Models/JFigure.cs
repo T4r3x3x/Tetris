@@ -2,7 +2,7 @@
 
 namespace TetrisEngine.Figure.Models
 {
-	public class JFigure : AbstractFigure
+	internal class JFigure : AbstractFigure
 	{
 		public JFigure(Position startPosition) : base(startPosition) { }
 
