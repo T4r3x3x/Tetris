@@ -19,7 +19,7 @@
 				{
 					var key = Console.ReadKey(true).Key;
 					_inputHandler.InputHandle(key);
-					Thread.Sleep(InputReadDelay);
+					//	Thread.Sleep(InputReadDelay);
 				}
 			}
 		}

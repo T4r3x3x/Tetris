@@ -29,11 +29,14 @@ namespace ConsoleFrontend.Display
 
 		public void Update(Cell[][] gameField)
 		{
-			var differenceMap = GetFramesDifference(gameField);
-			if (_gameFieldLastFrame == null)
-				PrintBoundaries();
-			_gameFieldLastFrame = gameField;
-			RedisplayGameField(gameField, differenceMap);
+			lock (_sync)
+			{
+				var differenceMap = GetFramesDifference(gameField);
+				if (_gameFieldLastFrame == null)
+					PrintBoundaries();
+				_gameFieldLastFrame = gameField;
+				RedisplayGameField(gameField, differenceMap);
+			}
 		}
 
 		private List<List<bool>> GetFramesDifference(Cell[][] gameFieldCurrentFrame)

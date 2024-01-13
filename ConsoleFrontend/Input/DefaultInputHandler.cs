@@ -11,21 +11,21 @@ namespace ConsoleFrontend.Input
 			_game = game;
 		}
 
-		public void InputHandle(ConsoleKey key)
+		public async void InputHandle(ConsoleKey key)
 		{
 			switch (key)
 			{
 				case ConsoleKey.A:
-					_game.MoveFigureLeft();
+					await _game.MoveFigureLeft();
 					break;
 				case ConsoleKey.D:
-					_game.MoveFigureRight();
+					await _game.MoveFigureRight();
 					break;
 				case ConsoleKey.W:
-					_game.RotateFigure();
+					await _game.RotateFigure();
 					break;
 				case ConsoleKey.S:
-					_game.MoveFigureDown();
+					await _game.MoveFigureDown();
 					break;
 				case ConsoleKey.Escape:
 					_game.Pause();

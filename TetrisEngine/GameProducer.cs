@@ -57,41 +57,44 @@ namespace TetrisEngine
 			isPause = false;
 		}
 
-		public void MoveFigureLeft()
+		public async Task MoveFigureLeft()
 		{
 			if (isPause)
 				return;
-			MoveFigure(MoveDirection.Left);
+
+			await Task.Run(() => MoveFigure(MoveDirection.Left));
 		}
 
-		public void MoveFigureRight()
+		public async Task MoveFigureRight()
 		{
 			if (isPause)
 				return;
-			MoveFigure(MoveDirection.Right);
+			await Task.Run(() => MoveFigure(MoveDirection.Right));
 		}
 
-		public void MoveFigureDown()
+		public async Task MoveFigureDown()
 		{
 			if (isPause)
 				return;
-			MoveFigure(MoveDirection.Down);
+			await Task.Run(() => MoveFigure(MoveDirection.Down));
 		}
 
-		public void RotateFigure()
+		public async Task RotateFigure()
 		{
 			if (isPause)
 				return;
+			await Task.Run(() =>
+			{
+				if (!CanRotateFigure())
+					return;
 
-			if (!CanRotateFigure())
-				return;
+				Position[] OldSegmentsPosition = new Position[_figure.SegmentsPosition.Count()];
+				_figure.SegmentsPosition.ToList().CopyTo(OldSegmentsPosition, 0);
 
-			Position[] OldSegmentsPosition = new Position[_figure.SegmentsPosition.Count()];
-			_figure.SegmentsPosition.ToList().CopyTo(OldSegmentsPosition, 0);
-
-			_figure.Rotate();
-			RefillGameField(OldSegmentsPosition);
-			NotifyGameFieldChanged();
+				_figure.Rotate();
+				RefillGameField(OldSegmentsPosition);
+				NotifyGameFieldChanged();
+			});
 		}
 
 		private void NotifyGameFieldChanged()
