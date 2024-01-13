@@ -93,7 +93,7 @@ namespace TetrisEngine
 					while (CanMove(MoveDirection.Down))
 					{
 						Thread.Sleep(_delay);
-						//	MoveFigureDown();
+						MoveFigureDown();
 					}
 					var erasedRowsOnThisIter = EraseFilledRows();
 					IncreaseGameSpeed(erasedRowsOnThisIter);

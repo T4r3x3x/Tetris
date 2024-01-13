@@ -21,7 +21,7 @@ game.Wait();
 var countOfErasedRows = game.Result;
 
 inputReader.StopReading();
-//controller.Wait();
+controller.Wait();
 
 Console.Clear();
 Console.WriteLine(string.Format("Game over! You have erased {0} rows!", countOfErasedRows));
@@ -34,6 +34,6 @@ void WaitUntilPressedStart()
 	{
 		Console.Clear();
 		Console.WriteLine("Press space to start game");
-		key = Console.ReadKey().Key;
+		key = Console.ReadKey(true).Key;
 	}
 }

@@ -1,31 +1,31 @@
-﻿using ConsoleFrontend.Display;
-
-namespace ConsoleFrontend.Input
+﻿namespace ConsoleFrontend.Input
 {
 	public class ConsoleInputController
 	{
+		private const int InputReadDelay = 100;
 		private readonly IInputHandler _inputHandler;
-		private readonly ConsoleDisplay _consoleDisplay;
 		private bool isListening = true;
 
-		public ConsoleInputController(IInputHandler inputHandler, ConsoleDisplay consoleDisplay)
+		public ConsoleInputController(IInputHandler inputHandler)
 		{
 			_inputHandler = inputHandler;
-			_consoleDisplay = consoleDisplay;
 		}
 
 		public void Reading()
 		{
 			while (isListening)
 			{
-				var key = Console.ReadKey().Key;
-				_inputHandler.InputHandle(key);
+				if (Console.KeyAvailable)
+				{
+					var key = Console.ReadKey(true).Key;
+					_inputHandler.InputHandle(key);
+					Thread.Sleep(InputReadDelay);
+				}
 			}
 		}
 
 		public void StopReading()
 		{
-			_consoleDisplay.StopDisplay();
 			isListening = false;
 		}
 	}

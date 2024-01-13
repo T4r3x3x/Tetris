@@ -6,13 +6,9 @@ namespace ConsoleFrontend.Display
 {
 	public class ConsoleDisplay
 	{
-		private const int Width = 10, Height = 20;
+		private const int Width = 10, Height = 20, VerticalLineWidth = 1;
 
 		private Cell[][] _gameFieldLastFrame;
-
-		private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-		private CancellationToken token;
-		private Task printTask;
 		private object _sync = new object();
 
 
@@ -29,17 +25,6 @@ namespace ConsoleFrontend.Display
 				Console.Write("|\n");
 			}
 			PrintVerticalLine(Width);
-		}
-
-		public void StopDisplay()
-		{
-			cancelTokenSource.Cancel();
-		}
-
-		public void EraseKey()
-		{
-			Console.SetCursorPosition(0, Height + 1);
-			Console.Write("");
 		}
 
 		public void Update(Cell[][] gameField)
@@ -89,7 +74,7 @@ namespace ConsoleFrontend.Display
 
 		private void PrintVerticalLine(int width)
 		{
-			for (int i = 0; i < width + 2; i++)
+			for (int i = 0; i < width + VerticalLineWidth * 2; i++)
 				Console.Write('-');
 			Console.WriteLine();
 		}
