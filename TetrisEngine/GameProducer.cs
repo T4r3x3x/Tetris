@@ -10,7 +10,7 @@ namespace TetrisEngine
 		private int _countOfErasedRows = 0;
 		private int _delay;
 
-		private readonly Position _startPosition = new(5, 0);
+		private readonly Position _startPosition = new(4, 0);
 		private bool isGameOver = false, isPause = false;
 
 		private AbstractFigure _figure;
@@ -69,6 +69,7 @@ namespace TetrisEngine
 		{
 			if (isPause)
 				return;
+
 			await Task.Run(() => MoveFigure(MoveDirection.Right));
 		}
 
@@ -76,6 +77,7 @@ namespace TetrisEngine
 		{
 			if (isPause)
 				return;
+
 			await Task.Run(() => MoveFigure(MoveDirection.Down));
 		}
 
@@ -83,6 +85,7 @@ namespace TetrisEngine
 		{
 			if (isPause)
 				return;
+
 			await Task.Run(() =>
 			{
 				if (!CanRotateFigure())
@@ -114,7 +117,7 @@ namespace TetrisEngine
 					if (!isPause)
 					{
 						Thread.Sleep(_delay);
-						MoveFigureDown();
+						MoveFigure(MoveDirection.Down);
 					}
 				}
 				var erasedRowsOnThisIter = EraseFilledRows();
@@ -288,10 +291,10 @@ namespace TetrisEngine
 		private void MoveFilledCellsDown(int startRow)
 		{
 			for (int i = 0; i < Width; i++)
-				for (int j = startRow; j > 0 && _gameField[j - 1][i].IsFilled != false; j--)
-				{
-					(_gameField[j][i], _gameField[j - 1][i]) = (_gameField[j - 1][i], _gameField[j][i]);
-				}
+				for (int j = startRow; j > 0; j--)
+					if (_gameField[j - 1][i].IsFilled != false)
+						(_gameField[j][i], _gameField[j - 1][i]) = (_gameField[j - 1][i], _gameField[j][i]);
+
 		}
 
 		private bool NeedToDelete(Cell[] row)
