@@ -13,17 +13,27 @@ namespace ConsoleFrontend.Input
 
         public void InputHandle(ConsoleKey key)
         {
-            Action? action = key switch
+            switch (key)
             {
-                ConsoleKey.A => _game.MoveFigureLeft,
-                ConsoleKey.D => _game.MoveFigureRight,
-                ConsoleKey.W => _game.RotateFigure,
-                ConsoleKey.S => _game.MoveFigureDown,
-                ConsoleKey.Escape => _game.Pause,
-                ConsoleKey.Enter => _game.Resume,
-                _ => null!
-            };
-            action?.Invoke();
+                case ConsoleKey.A:
+                    _game.MoveFigureLeft();
+                    break;
+                case ConsoleKey.D:
+                    _game.MoveFigureRight();
+                    break;
+                case ConsoleKey.W:
+                    _game.RotateFigure();
+                    break;
+                case ConsoleKey.S:
+                    _game.MoveFigureDown();
+                    break;
+                case ConsoleKey.Escape:
+                    _game.Pause();
+                    break;
+                case ConsoleKey.Enter:
+                    _game.Resume();
+                    break;
+            }
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using TetrisEngine.Factories;
-using TetrisEngine.Models;
-using TetrisEngine.Models.Figure.Models.Abstract;
+﻿using TetrisEngine.Figure;
 
 namespace TetrisEngine
 {
@@ -12,7 +10,7 @@ namespace TetrisEngine
         private int _countOfErasedRows = 0;
         private int _delay;
 
-        private readonly Position _figureStartPosition = new(4, 0);
+        private readonly Position _startPosition = new(4, 0);
         private bool isGameOver = false, isPause = false;
 
         private AbstractFigure _figure;
@@ -104,7 +102,7 @@ namespace TetrisEngine
 
         private void NotifyGameFieldChanged()
         {
-            Cell[][] gameFieldCopy = _gameField.Select(x => x.Select(cell => (Cell) cell.Clone()).ToArray()).ToArray();
+            Cell[][] gameFieldCopy = _gameField.Select(x => x.Select(cell => (Cell)cell.Clone()).ToArray()).ToArray();
             OnGameFieldChanged(gameFieldCopy);
         }
         #endregion
@@ -241,7 +239,7 @@ namespace TetrisEngine
 
         private void CreateNewFigure()
         {
-            _figure = _figureFactory.GetFigure(_figureStartPosition);
+            _figure = _figureFactory.GetFigure(_startPosition);
         }
 
         private void PutFigure()
